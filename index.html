@@ -3,126 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium QR Generator | My CSC Portal</title>
+    <title>Stylish QR Generator | My CSC Portal</title>
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
-        :root { --primary: #6366f1; --secondary: #4f46e5; --bg: #f1f5f9; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: #334155; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
-        h2 { text-align: center; margin-bottom: 25px; color: var(--primary); font-weight: 700; }
-        
-        .section-title { font-size: 14px; font-weight: 700; margin: 15px 0 8px; color: #64748b; text-transform: uppercase; border-left: 4px solid var(--primary); padding-left: 10px; }
-        
-        input, select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: 0.3s; box-sizing: border-box; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        button { width: 100%; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; border: none; font-size: 16px; margin-top: 15px; }
-        .btn-gen { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
-        .btn-gen:hover { background: var(--secondary); transform: translateY(-2px); }
-        .btn-down { background: #10b981; color: white; display: none; }
-        
-        #canvas-container { margin-top: 30px; display: flex; justify-content: center; background: #fff; padding: 15px; border-radius: 15px; border: 2px dashed #cbd5e1; min-height: 250px; align-items: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; width: 100%; }
+        h2 { text-align: center; color: #1a73e8; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        .row div { flex: 1; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; font-size: 16px; }
+        .btn-generate { background-color: #1a73e8; color: white; }
+        .btn-download { background-color: #34a853; color: white; display: none; }
+        #qr-result { margin-top: 25px; display: flex; justify-content: center; border: 1px dashed #ccc; padding: 10px; border-radius: 10px; min-height: 250px; align-items: center; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>✨ QR Designer</h2>
+<div class="container">
+    <h2>🎨 QR Designer</h2>
     
-    <div class="section-title">Main Content</div>
-    <input type="text" id="qr-data" placeholder="लिंक किंवा मजकूर टाका...">
+    <div class="form-group">
+        <label>URL किंवा मजकूर:</label>
+        <input type="text" id="qr-input" placeholder="येथे लिंक टाका...">
+    </div>
 
-    <div class="section-title">Design Settings</div>
-    <div class="grid-2">
-        <div>
-            <label style="font-size: 12px;">Dots Style</label>
-            <select id="dots-type">
-                <option value="square">Square (साधा)</option>
-                <option value="dots" selected>Dots (ठिपके)</option>
-                <option value="rounded">Rounded (गोलाकार)</option>
+    <div class="row">
+        <div class="form-group">
+            <label>Dots Style (ठिपके):</label>
+            <select id="dots-style">
+                <option value="square">Square</option>
+                <option value="dots" selected>Dots (गोल)</option>
+                <option value="rounded">Rounded</option>
                 <option value="extra-rounded">Extra Rounded</option>
-                <option value="classy">Classy</option>
+                <option value="classy">Classy (स्टाइलिश)</option>
+                <option value="classy-rounded">Classy Rounded</option>
             </select>
         </div>
-        <div>
-            <label style="font-size: 12px;">Corner Style</label>
-            <select id="corners-type">
+        <div class="form-group">
+            <label>Corner Style:</label>
+            <select id="corner-style">
                 <option value="square">Square</option>
-                <option value="dot" selected>Rounded Corner</option>
+                <option value="dot" selected>Rounded</option>
                 <option value="extra-rounded">Extra Rounded</option>
             </select>
         </div>
     </div>
 
-    <div class="grid-2" style="margin-top:10px;">
-        <div>
-            <label style="font-size: 12px;">QR रंग</label>
-            <input type="color" id="qr-color" value="#4f46e5">
+    <div class="row">
+        <div class="form-group">
+            <label>QR रंग:</label>
+            <input type="color" id="qr-color" value="#1a73e8">
         </div>
-        <div>
-            <label style="font-size: 12px;">लोगो जोडा</label>
+        <div class="form-group">
+            <label>लोगो (Optional):</label>
             <input type="file" id="qr-logo" accept="image/*">
         </div>
     </div>
 
-    <button class="btn-gen" onclick="generateQR()">Generate Stylish QR 🎨</button>
+    <button class="btn-generate" onclick="createQR()">Generate QR Code</button>
     
-    <div id="canvas-container">
-        <p style="color:#94a3b8;">Generate केल्यावर इथे QR दिसेल</p>
+    <div id="qr-result">
+        <p style="color: #888;">QR कोड इथे जनरेट होईल</p>
     </div>
 
-    <button class="btn-down" id="download-btn" onclick="downloadQR()">Download as Image (PNG) 📥</button>
+    <button id="dl-btn" class="btn-download" onclick="downloadNow()">Download PNG</button>
 </div>
 
 <script>
-    let qrCode;
+    let finalQR;
 
-    function generateQR() {
-        const data = document.getElementById("qr-data").value;
-        const color = document.getElementById("qr-color").value;
-        const dotsType = document.getElementById("dots-type").value;
-        const cornersType = document.getElementById("corners-type").value;
-        const logoFile = document.getElementById("qr-logo").files[0];
-        
-        if (!data) {
-            alert("कृपया मजकूर किंवा लिंक टाका!");
+    function createQR() {
+        const inputData = document.getElementById("qr-input").value;
+        const dotType = document.getElementById("dots-style").value;
+        const cornerType = document.getElementById("corner-style").value;
+        const colorValue = document.getElementById("qr-color").value;
+        const logoInput = document.getElementById("qr-logo").files[0];
+
+        if (!inputData) {
+            alert("कृपया माहिती भरा!");
             return;
         }
 
-        const options = {
+        const config = {
             width: 280,
             height: 280,
-            data: data,
-            dotsOptions: { color: color, type: dotsType },
-            cornersSquareOptions: { color: color, type: cornersType },
+            data: inputData,
+            dotsOptions: { color: colorValue, type: dotType },
+            cornersSquareOptions: { color: colorValue, type: cornerType },
             backgroundOptions: { color: "#ffffff" },
-            imageOptions: { crossOrigin: "anonymous", margin: 5, imageSize: 0.4 }
+            imageOptions: { crossOrigin: "anonymous", margin: 5 }
         };
 
-        if (logoFile) {
+        if (logoInput) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                options.image = e.target.result;
-                renderQR(options);
+                config.image = e.target.result;
+                render(config);
             };
-            reader.readAsDataURL(logoFile);
+            reader.readAsDataURL(logoInput);
         } else {
-            renderQR(options);
+            render(config);
         }
     }
 
-    function renderQR(options) {
-        document.getElementById("canvas-container").innerHTML = "";
-        qrCode = new QRCodeStyling(options);
-        qrCode.append(document.getElementById("canvas-container"));
-        document.getElementById("download-btn").style.display = "block";
+    function render(config) {
+        document.getElementById("qr-result").innerHTML = "";
+        finalQR = new QRCodeStyling(config);
+        finalQR.append(document.getElementById("qr-result"));
+        document.getElementById("dl-btn").style.display = "block";
     }
 
-    function downloadQR() {
-        if (qrCode) {
-            qrCode.download({ name: "my-csc-portal-qr", extension: "png" });
+    function downloadNow() {
+        if (finalQR) {
+            finalQR.download({ name: "my-csc-qr", extension: "png" });
         }
     }
 </script>
