@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-        /* User Selection Disable */
+        /* Security: Disable Text Selection */
         body {
             user-select: none; 
             -webkit-user-select: none;
@@ -29,18 +29,18 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            max-width: 450px;
+            max-width: 480px;
             width: 100%;
         }
 
-        h2 { text-align: center; color: #111827; margin-bottom: 25px; }
+        h2 { text-align: center; color: #111827; margin-bottom: 25px; font-weight: 700; }
 
         .label-text {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
-            color: #4b5563;
-            margin-bottom: 8px;
+            color: #6b7280;
+            margin-bottom: 6px;
             text-transform: uppercase;
         }
 
@@ -49,11 +49,15 @@
             padding: 12px;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             box-sizing: border-box;
             font-size: 14px;
+            transition: 0.3s;
         }
 
+        .input-box:focus { border-color: #6366f1; outline: none; }
+
+        /* Modern Color Picker Button */
         .color-picker-btn {
             display: flex;
             align-items: center;
@@ -64,34 +68,33 @@
             padding: 10px 15px;
             cursor: pointer;
             transition: all 0.2s ease;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        .color-picker-btn:hover {
-            background: #f5f3ff;
-            transform: scale(1.02);
-        }
+        .color-picker-btn:hover { background: #f5f3ff; transform: translateY(-1px); }
 
         .color-info { display: flex; align-items: center; }
 
         .color-preview {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             border: 2px solid #fff;
             box-shadow: 0 0 0 1px #e5e7eb;
             margin-right: 12px;
         }
 
-        .color-label { font-size: 14px; font-weight: 600; color: #1f2937; }
+        .color-label { font-size: 13px; font-weight: 600; color: #374151; }
 
-        #qr-color {
-            opacity: 0;
-            position: absolute;
-            width: 0; height: 0;
-        }
+        #qr-color { opacity: 0; position: absolute; width: 0; height: 0; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* Stylish Logo Upload Section */
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 18px;
+        }
 
         .btn-gen {
             width: 100%;
@@ -103,7 +106,10 @@
             font-weight: 700;
             cursor: pointer;
             font-size: 16px;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
         }
+
+        .btn-gen:hover { background: #4f46e5; }
 
         #qr-display {
             margin-top: 25px;
@@ -154,18 +160,26 @@
             <select id="corner-style" class="input-box">
                 <option value="square">Square</option>
                 <option value="dot" selected>Rounded</option>
+                <option value="extra-rounded">Extra Rounded</option>
             </select>
         </div>
     </div>
 
-    <label class="label-text">QR Color</label>
-    <div class="color-picker-btn" onclick="document.getElementById('qr-color').click()">
-        <div class="color-info">
-            <div id="preview-circ" class="color-preview" style="background: #6366f1;"></div>
-            <span class="color-label">रंग निवडा (Select Color)</span>
+    <div class="grid">
+        <div>
+            <label class="label-text">QR Color</label>
+            <div class="color-picker-btn" onclick="document.getElementById('qr-color').click()">
+                <div class="color-info">
+                    <div id="preview-circ" class="color-preview" style="background: #6366f1;"></div>
+                    <span class="color-label">Select Color</span>
+                </div>
+                <input type="color" id="qr-color" value="#6366f1" oninput="updateUI(this.value)">
+            </div>
         </div>
-        <span id="hex-text" style="font-size: 12px; color: #6b7280; font-weight: bold;">#6366F1</span>
-        <input type="color" id="qr-color" value="#6366f1" oninput="updateUI(this.value)">
+        <div>
+            <label class="label-text">Add Logo (Optional)</label>
+            <input type="file" id="qr-logo" class="input-box" accept="image/*" style="padding: 8px; font-size: 11px;">
+        </div>
     </div>
 
     <button class="btn-gen" onclick="generate()">Generate QR Code</button>
@@ -174,22 +188,21 @@
         <span style="color: #9ca3af;">तुमचा QR इथे दिसेल</span>
     </div>
 
-    <button id="dl-btn" class="btn-down" onclick="download()">Download PNG</button>
+    <button id="dl-btn" class="btn-down" onclick="download()">Download PNG 📥</button>
 </div>
 
 <script>
-    /* Security: Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U */
+    /* Security Script: Block F12, Inspect, etc. */
     document.onkeydown = function(e) {
-        if (e.keyCode == 123) { return false; }
-        if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) { return false; }
-        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        if (e.keyCode == 123) return false;
+        if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) return false;
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
     };
 
     let qr;
 
     function updateUI(color) {
         document.getElementById('preview-circ').style.background = color;
-        document.getElementById('hex-text').innerText = color.toUpperCase();
     }
 
     function generate() {
@@ -197,25 +210,41 @@
         const color = document.getElementById('qr-color').value;
         const dot = document.getElementById('dot-style').value;
         const corner = document.getElementById('corner-style').value;
+        const logoFile = document.getElementById('qr-logo').files[0];
 
-        if(!data) { alert("कृपया लिंक टाका!"); return; }
+        if(!data) { alert("कृपया लिंक किंवा मजकूर टाका!"); return; }
 
-        document.getElementById('qr-display').innerHTML = "";
-        qr = new QRCodeStyling({
+        const config = {
             width: 250,
             height: 250,
             data: data,
             dotsOptions: { color: color, type: dot },
             cornersSquareOptions: { color: color, type: corner },
-            backgroundOptions: { color: "#ffffff" }
-        });
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 5, imageSize: 0.4 }
+        };
 
+        if (logoFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                config.image = e.target.result;
+                renderQR(config);
+            };
+            reader.readAsDataURL(logoFile);
+        } else {
+            renderQR(config);
+        }
+    }
+
+    function renderQR(config) {
+        document.getElementById('qr-display').innerHTML = "";
+        qr = new QRCodeStyling(config);
         qr.append(document.getElementById('qr-display'));
         document.getElementById('dl-btn').style.display = "block";
     }
 
     function download() {
-        if(qr) qr.download({ name: "qr", extension: "png" });
+        if(qr) qr.download({ name: "my-qr", extension: "png" });
     }
 </script>
 
