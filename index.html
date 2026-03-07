@@ -8,7 +8,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
+        /* User Selection Disable */
         body {
+            user-select: none; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             display: flex;
@@ -49,13 +54,12 @@
             font-size: 14px;
         }
 
-        /* Modern Color Picker Button */
         .color-picker-btn {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: #ffffff;
-            border: 2px solid #6366f1; /* ठळक बॉर्डर जेणेकरून बटन उठून दिसेल */
+            border: 2px solid #6366f1;
             border-radius: 12px;
             padding: 10px 15px;
             cursor: pointer;
@@ -127,7 +131,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <div class="container">
     <h2>✨ QR Designer</h2>
@@ -174,6 +178,13 @@
 </div>
 
 <script>
+    /* Security: Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U */
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123) { return false; }
+        if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) { return false; }
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+    };
+
     let qr;
 
     function updateUI(color) {
