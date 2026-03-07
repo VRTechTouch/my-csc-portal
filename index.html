@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advance QR Code Generator | My CSC Portal</title>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        :root { --primary: #2563eb; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; width: 100%; text-align: center; }
+        h2 { color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"], input[type="file"], input[type="color"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { width: 100%; padding: 12px; margin-top: 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-gen { background: var(--primary); color: white; }
+        .btn-gen:hover { background: #1d4ed8; }
+        .btn-down { background: #10b981; color: white; margin-top: 10px; display: none; }
+        #canvas-container { margin-top: 25px; display: flex; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; border: 1px dashed #ccc; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>QR Code Generator</h2>
+    
+    <div class="input-group">
+        <label>URL किंवा मजकूर टाका:</label>
+        <input type="text" id="qr-data" placeholder="https://google.com">
+    </div>
+
+    <div class="controls">
+        <div class="input-group">
+            <label>QR रंग निवडा:</label>
+            <input type="color" id="qr-color" value="#000000">
+        </div>
+        <div class="input-group">
+            <label>लोगो निवडा (Optional):</label>
+            <input type="file" id="qr-logo" accept="image/*">
+        </div>
+    </div>
+
+    <button class="btn-gen" onclick="generateQR()">QR कोड तयार करा</button>
+    
+    <div id="canvas-container">
+        </div>
+
+    <button class="btn-down" id="download-btn" onclick="downloadQR()">डाऊनलोड करा (PNG)</button>
+</div>
+
+<script>
+    let qrCode;
+
+    function generateQR() {
+        const data = document.getElementById("qr-data").value;
+        const color = document.getElementById("qr-color").value;
+        const logoFile = document.getElementById("qr-logo").files[0];
+        
+        if (!data) {
+            alert("कृपया काहीतरी माहिती भरा!");
+            return;
+        }
+
+        const options = {
+            width: 250,
+            height: 250,
+            data: data,
+            dotsOptions: { color: color, type: "rounded" },
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 5 }
+        };
+
+        if (logoFile) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                options.image = e.target.result;
+                renderQR(options);
+            };
+            reader.readAsDataURL(logoFile);
+        } else {
+            renderQR(options);
+        }
+    }
+
+    function renderQR(options) {
+        document.getElementById("canvas-container").innerHTML = "";
+        qrCode = new QRCodeStyling(options);
+        qrCode.append(document.getElementById("canvas-container"));
+        document.getElementById("download-btn").style.display = "block";
+    }
+
+    function downloadQR() {
+        if (qrCode) {
+            qrCode.download({ name: "my-csc-qr", extension: "png" });
+        }
+    }
+</script>
+
+</body>
+</html>
