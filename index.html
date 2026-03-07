@@ -3,51 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advance QR Code Generator | My CSC Portal</title>
+    <title>Premium QR Generator | My CSC Portal</title>
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 450px; width: 100%; text-align: center; }
-        h2 { color: #1e293b; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        input[type="text"], input[type="file"], input[type="color"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { width: 100%; padding: 12px; margin-top: 20px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-gen { background: var(--primary); color: white; }
-        .btn-gen:hover { background: #1d4ed8; }
-        .btn-down { background: #10b981; color: white; margin-top: 10px; display: none; }
-        #canvas-container { margin-top: 25px; display: flex; justify-content: center; background: #fff; padding: 10px; border-radius: 10px; border: 1px dashed #ccc; }
+        :root { --primary: #6366f1; --secondary: #4f46e5; --bg: #f1f5f9; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; color: #334155; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-width: 500px; width: 100%; }
+        h2 { text-align: center; margin-bottom: 25px; color: var(--primary); font-weight: 700; }
+        
+        .section-title { font-size: 14px; font-weight: 700; margin: 15px 0 8px; color: #64748b; text-transform: uppercase; border-left: 4px solid var(--primary); padding-left: 10px; }
+        
+        input, select { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 14px; transition: 0.3s; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        button { width: 100%; padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; border: none; font-size: 16px; margin-top: 15px; }
+        .btn-gen { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4); }
+        .btn-gen:hover { background: var(--secondary); transform: translateY(-2px); }
+        .btn-down { background: #10b981; color: white; display: none; }
+        
+        #canvas-container { margin-top: 30px; display: flex; justify-content: center; background: #fff; padding: 15px; border-radius: 15px; border: 2px dashed #cbd5e1; min-height: 250px; align-items: center; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>QR Code Generator</h2>
+    <h2>✨ QR Designer</h2>
     
-    <div class="input-group">
-        <label>URL किंवा मजकूर टाका:</label>
-        <input type="text" id="qr-data" placeholder="https://google.com">
+    <div class="section-title">Main Content</div>
+    <input type="text" id="qr-data" placeholder="लिंक किंवा मजकूर टाका...">
+
+    <div class="section-title">Design Settings</div>
+    <div class="grid-2">
+        <div>
+            <label style="font-size: 12px;">Dots Style</label>
+            <select id="dots-type">
+                <option value="square">Square (साधा)</option>
+                <option value="dots" selected>Dots (ठिपके)</option>
+                <option value="rounded">Rounded (गोलाकार)</option>
+                <option value="extra-rounded">Extra Rounded</option>
+                <option value="classy">Classy</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px;">Corner Style</label>
+            <select id="corners-type">
+                <option value="square">Square</option>
+                <option value="dot" selected>Rounded Corner</option>
+                <option value="extra-rounded">Extra Rounded</option>
+            </select>
+        </div>
     </div>
 
-    <div class="controls">
-        <div class="input-group">
-            <label>QR रंग निवडा:</label>
-            <input type="color" id="qr-color" value="#000000">
+    <div class="grid-2" style="margin-top:10px;">
+        <div>
+            <label style="font-size: 12px;">QR रंग</label>
+            <input type="color" id="qr-color" value="#4f46e5">
         </div>
-        <div class="input-group">
-            <label>लोगो निवडा (Optional):</label>
+        <div>
+            <label style="font-size: 12px;">लोगो जोडा</label>
             <input type="file" id="qr-logo" accept="image/*">
         </div>
     </div>
 
-    <button class="btn-gen" onclick="generateQR()">QR कोड तयार करा</button>
+    <button class="btn-gen" onclick="generateQR()">Generate Stylish QR 🎨</button>
     
     <div id="canvas-container">
-        </div>
+        <p style="color:#94a3b8;">Generate केल्यावर इथे QR दिसेल</p>
+    </div>
 
-    <button class="btn-down" id="download-btn" onclick="downloadQR()">डाऊनलोड करा (PNG)</button>
+    <button class="btn-down" id="download-btn" onclick="downloadQR()">Download as Image (PNG) 📥</button>
 </div>
 
 <script>
@@ -56,20 +82,23 @@
     function generateQR() {
         const data = document.getElementById("qr-data").value;
         const color = document.getElementById("qr-color").value;
+        const dotsType = document.getElementById("dots-type").value;
+        const cornersType = document.getElementById("corners-type").value;
         const logoFile = document.getElementById("qr-logo").files[0];
         
         if (!data) {
-            alert("कृपया काहीतरी माहिती भरा!");
+            alert("कृपया मजकूर किंवा लिंक टाका!");
             return;
         }
 
         const options = {
-            width: 250,
-            height: 250,
+            width: 280,
+            height: 280,
             data: data,
-            dotsOptions: { color: color, type: "rounded" },
+            dotsOptions: { color: color, type: dotsType },
+            cornersSquareOptions: { color: color, type: cornersType },
             backgroundOptions: { color: "#ffffff" },
-            imageOptions: { crossOrigin: "anonymous", margin: 5 }
+            imageOptions: { crossOrigin: "anonymous", margin: 5, imageSize: 0.4 }
         };
 
         if (logoFile) {
@@ -93,7 +122,7 @@
 
     function downloadQR() {
         if (qrCode) {
-            qrCode.download({ name: "my-csc-qr", extension: "png" });
+            qrCode.download({ name: "my-csc-portal-qr", extension: "png" });
         }
     }
 </script>
