@@ -1,142 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Professional Resume Builder</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume Builder</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#f2f2f2;
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#4facfe,#00f2fe);
 margin:0;
+padding:0;
 }
 
 .container{
+width:95%;
+max-width:1200px;
+margin:auto;
+padding:20px;
 display:flex;
+gap:20px;
 }
 
-.form{
-width:40%;
+.form-section{
+width:50%;
 background:white;
 padding:20px;
-height:100vh;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
 overflow:auto;
+height:90vh;
 }
 
-.preview{
-width:60%;
-background:#eaeaea;
+.preview-section{
+width:50%;
+background:white;
 padding:20px;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+h2{
+border-bottom:2px solid #eee;
+padding-bottom:5px;
 }
 
 input,textarea,select{
 width:100%;
 padding:8px;
-margin-top:5px;
-margin-bottom:10px;
+margin:5px 0 10px;
+border-radius:5px;
+border:1px solid #ccc;
 }
 
 button{
-padding:10px;
-margin:5px;
-background:#007bff;
+background:#4facfe;
 color:white;
 border:none;
+padding:10px 15px;
+border-radius:5px;
 cursor:pointer;
 }
 
-#resume{
-background:white;
-padding:30px;
-min-height:600px;
+button:hover{
+background:#2c8ef4;
 }
 
-.template1 h1{
-color:#007bff;
+.resume{
+padding:20px;
 }
 
-.template2{
-font-family:Georgia;
+.resume img{
+width:100px;
+height:100px;
+border-radius:50%;
+object-fit:cover;
 }
 
-.template2 h1{
-color:#222;
-border-bottom:2px solid #000;
-}
-
-.template3{
-background:#fafafa;
-}
-
-img{
-max-width:120px;
-border-radius:5px;
+.resume h1{
+margin:0;
 }
 
 </style>
-</head>
 
+</head>
 <body>
 
 <div class="container">
 
-<div class="form">
+<div class="form-section">
 
-<h2>Resume Builder</h2>
+<h2>Personal Information</h2>
 
-<label>Template</label>
-<select id="template">
-<option value="template1">Template 1</option>
-<option value="template2">Template 2</option>
-<option value="template3">Template 3</option>
-<option value="template4">Template 4</option>
-<option value="template5">Template 5</option>
-<option value="template6">Template 6</option>
-<option value="template7">Template 7</option>
-<option value="template8">Template 8</option>
-<option value="template9">Template 9</option>
-<option value="template10">Template 10</option>
-</select>
-
-<label>Photo</label>
+<input id="name" placeholder="Full Name">
+<input id="mobile" placeholder="Mobile Number">
+<input id="email" placeholder="Email">
+<input id="address" placeholder="Address">
 <input type="file" id="photo">
 
-<label>Name</label>
-<input id="name">
+<h2>Career Objective</h2>
+<textarea id="objective" rows="3"></textarea>
 
-<label>Email</label>
-<input id="email">
+<h2>Education Details</h2>
+<input id="edu1" placeholder="10th Details">
+<input id="edu2" placeholder="12th Details">
+<input id="edu3" placeholder="Graduation">
+<input id="edu4" placeholder="Other Education">
 
-<label>Phone</label>
-<input id="phone">
+<h2>Experience</h2>
+<input id="exp" placeholder="Company Name & Position">
 
-<label>Address</label>
-<textarea id="address"></textarea>
+<h2>Skills</h2>
+<input id="skills" placeholder="Example: Computer, Typing, Excel">
 
-<label>Skills</label>
-<textarea id="skills"></textarea>
+<h2>Projects / Achievements</h2>
+<textarea id="projects"></textarea>
 
-<label>Education</label>
-<textarea id="education"></textarea>
-
-<label>Experience</label>
-<textarea id="experience"></textarea>
+<h2>Template Selection</h2>
+<select id="template">
+<option value="1">Modern Blue</option>
+<option value="2">Minimal Gray</option>
+<option value="3">Professional Dark</option>
+</select>
 
 <button onclick="generateResume()">Generate Resume</button>
-<button onclick="downloadPDF()">Download PDF</button>
-<button onclick="printResume()">Print</button>
-<button onclick="resetForm()">Reset</button>
+<button onclick="window.print()">Print</button>
 
 </div>
 
-<div class="preview">
+<div class="preview-section">
 
-<h2>Preview</h2>
+<h2>Live Preview</h2>
 
-<div id="resume"></div>
+<div id="resumePreview" class="resume">
+
+<img id="previewPhoto">
+
+<h1 id="previewName"></h1>
+
+<p id="previewContact"></p>
+
+<h3>Career Objective</h3>
+<p id="previewObjective"></p>
+
+<h3>Education</h3>
+<p id="previewEducation"></p>
+
+<h3>Experience</h3>
+<p id="previewExp"></p>
+
+<h3>Skills</h3>
+<p id="previewSkills"></p>
+
+<h3>Projects & Achievements</h3>
+<p id="previewProjects"></p>
+
+</div>
 
 </div>
 
@@ -144,85 +164,49 @@ border-radius:5px;
 
 <script>
 
-let photoData="";
+function generateResume(){
 
-document.getElementById("photo").addEventListener("change",function(){
+document.getElementById("previewName").innerText =
+document.getElementById("name").value;
 
-let file=this.files[0];
+document.getElementById("previewContact").innerText =
+document.getElementById("mobile").value + " | " +
+document.getElementById("email").value + " | " +
+document.getElementById("address").value;
+
+document.getElementById("previewObjective").innerText =
+document.getElementById("objective").value;
+
+document.getElementById("previewEducation").innerText =
+document.getElementById("edu1").value + "\n" +
+document.getElementById("edu2").value + "\n" +
+document.getElementById("edu3").value + "\n" +
+document.getElementById("edu4").value;
+
+document.getElementById("previewExp").innerText =
+document.getElementById("exp").value;
+
+document.getElementById("previewSkills").innerText =
+document.getElementById("skills").value;
+
+document.getElementById("previewProjects").innerText =
+document.getElementById("projects").value;
+
+let photo=document.getElementById("photo").files[0];
+
+if(photo){
 
 let reader=new FileReader();
 
 reader.onload=function(e){
-photoData=e.target.result;
-}
 
-reader.readAsDataURL(file);
-
-});
-
-function generateResume(){
-
-let name=document.getElementById("name").value;
-let email=document.getElementById("email").value;
-let phone=document.getElementById("phone").value;
-let address=document.getElementById("address").value;
-let skills=document.getElementById("skills").value;
-let education=document.getElementById("education").value;
-let experience=document.getElementById("experience").value;
-let template=document.getElementById("template").value;
-
-let html=`
-
-<div class="${template}">
-
-<img src="${photoData}">
-
-<h1>${name}</h1>
-
-<p><b>Email:</b> ${email}</p>
-<p><b>Phone:</b> ${phone}</p>
-<p><b>Address:</b> ${address}</p>
-
-<h3>Skills</h3>
-<p>${skills}</p>
-
-<h3>Education</h3>
-<p>${education}</p>
-
-<h3>Experience</h3>
-<p>${experience}</p>
-
-</div>
-
-`;
-
-document.getElementById("resume").innerHTML=html;
+document.getElementById("previewPhoto").src=e.target.result;
 
 }
 
-function downloadPDF(){
-
-let element=document.getElementById("resume");
-
-html2pdf().from(element).save("resume.pdf");
+reader.readAsDataURL(photo);
 
 }
-
-function printResume(){
-
-let printContents=document.getElementById("resume").innerHTML;
-
-let win=window.open();
-
-win.document.write(printContents);
-
-win.print();
-
-}
-
-function resetForm(){
-
-location.reload();
 
 }
 
