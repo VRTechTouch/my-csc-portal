@@ -6,12 +6,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #f1f5f9; height: 100vh; overflow: hidden; }
-        .main-container { display: grid; grid-template-columns: 400px 1fr; height: 100vh; }
+        body { font-family: 'Georgia', serif; background: #f1f5f9; height: 100vh; overflow: hidden; }
+        .main-container { display: grid; grid-template-columns: 380px 1fr; height: 100vh; }
         .sidebar { background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; }
         .preview-area { background: #cbd5e1; padding: 30px; overflow-y: auto; display: flex; justify-content: center; }
         
-        /* A4 Page Styling */
         #resume-canvas { 
             background: white; 
             width: 210mm; 
@@ -20,9 +19,9 @@
             transform-origin: top center;
             display: flex;
             flex-direction: column;
+            color: #333;
         }
 
-        /* मजकूर बाहेर जाऊ नये यासाठी कडक नियम */
         .wrap-text {
             overflow-wrap: anywhere !important; 
             word-break: break-word !important;
@@ -30,39 +29,42 @@
         }
 
         .input-field { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; margin-bottom: 10px; font-size: 14px; }
+        .section-title { font-weight: bold; font-size: 18px; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div class="main-container">
         <aside class="sidebar">
-            <h2 class="text-xl font-bold text-blue-700 mb-4">Resume Details</h2>
+            <h2 class="text-xl font-bold text-slate-700 mb-4 uppercase tracking-widest">Editor</h2>
             
             <div class="mb-4">
-                <label class="text-xs font-bold text-gray-400">PHOTO</label>
-                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" class="text-xs w-full">
+                <label class="text-xs font-bold text-gray-400 uppercase">Profile Photo</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)" class="text-xs w-full mt-1">
             </div>
 
-            <input type="text" id="inName" placeholder="पूर्ण नाव" oninput="render()" class="input-field">
-            <input type="text" id="inJob" placeholder="तुमची पदवी (Designation)" oninput="render()" class="input-field">
-            <input type="text" id="inEmail" placeholder="ईमेल" oninput="render()" class="input-field">
-            <input type="text" id="inPhone" placeholder="मोबाईल" oninput="render()" class="input-field">
+            <input type="text" id="inName" placeholder="Full Name (उदा. Carmelo Barese)" oninput="render()" class="input-field">
+            <input type="text" id="inJob" placeholder="Designation (उदा. Assistant Manager)" oninput="render()" class="input-field">
+            <input type="text" id="inEmail" placeholder="Email" oninput="render()" class="input-field">
+            <input type="text" id="inPhone" placeholder="Phone" oninput="render()" class="input-field">
+            <input type="text" id="inAddress" placeholder="Address (City, State)" oninput="render()" class="input-field">
             
-            <textarea id="inSummary" placeholder="सारांश (Summary)" oninput="render()" rows="3" class="input-field"></textarea>
-            <textarea id="inExp" placeholder="अनुभव (प्रत्येक ओळीवर एक)" oninput="render()" rows="4" class="input-field"></textarea>
-            <textarea id="inEdu" placeholder="शिक्षण (प्रत्येक ओळीवर एक)" oninput="render()" rows="3" class="input-field"></textarea>
-            <input type="text" id="inSkills" placeholder="कौशल्ये (स्वल्पविराम द्या)" oninput="render()" class="input-field">
+            <textarea id="inSummary" placeholder="Professional Summary" oninput="render()" rows="4" class="input-field"></textarea>
+            <textarea id="inExp" placeholder="Experience (One per line)" oninput="render()" rows="4" class="input-field"></textarea>
+            <textarea id="inEdu" placeholder="Education" oninput="render()" rows="3" class="input-field"></textarea>
+            <input type="text" id="inSkills" placeholder="Skills (Comma separated)" oninput="render()" class="input-field">
 
             <div class="mt-4">
-                <label class="text-xs font-bold text-gray-400">थीम रंग</label>
-                <input type="color" id="themeColor" value="#1e40af" oninput="render()" class="w-full h-8 cursor-pointer">
+                <label class="text-xs font-bold text-gray-400 uppercase">Theme Color</label>
+                <input type="color" id="themeColor" value="#4a6767" oninput="render()" class="w-full h-8 cursor-pointer border-none mt-1">
             </div>
 
-            <button onclick="download()" class="w-full bg-blue-600 text-white font-bold py-3 rounded mt-6 hover:bg-black transition">Download PDF</button>
+            <button onclick="download()" class="w-full bg-slate-700 text-white font-bold py-3 rounded mt-6 hover:bg-black transition uppercase tracking-widest">Download PDF</button>
         </aside>
 
         <main class="preview-area" id="viewArea">
-            <div id="resume-canvas"></div>
+            <div id="resume-canvas">
+                </div>
         </main>
     </div>
 
@@ -76,15 +78,15 @@
         }
 
         function render() {
-            // सर्व ID व्यवस्थित मिळवणे
             const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
             
             const data = {
-                name: getVal('inName') || "तुमचे नाव",
-                job: getVal('inJob') || "तुमचे पद",
+                name: getVal('inName') || "FULL NAME",
+                job: getVal('inJob') || "JOB TITLE",
                 email: getVal('inEmail') || "email@example.com",
-                phone: getVal('inPhone') || "9000000000",
-                summary: getVal('inSummary') || "तुमची माहिती...",
+                phone: getVal('inPhone') || "000.000.0000",
+                address: getVal('inAddress') || "City, State",
+                summary: getVal('inSummary') || "Start typing your professional summary...",
                 exp: getVal('inExp').split('\n').filter(x => x.trim()),
                 edu: getVal('inEdu').split('\n').filter(x => x.trim()),
                 skills: getVal('inSkills').split(',').filter(x => x.trim()),
@@ -93,42 +95,56 @@
 
             const canvas = document.getElementById('resume-canvas');
             
-            // Layout Logic - Padding आणि Layout सुधारले आहे
+            // Layout HTML (Based on image_71a3e1.png)
             canvas.innerHTML = `
-                <div style="padding: 50px; flex-grow: 1; display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 30px; border-bottom: 3px solid ${data.color}; padding-bottom: 30px; margin-bottom: 40px;">
-                        ${userPhoto ? `<img src="${userPhoto}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 3px solid ${data.color}">` : ''}
-                        <div>
-                            <h1 class="wrap-text" style="font-size: 40px; font-weight: 800; color: #111; line-height: 1;">${data.name}</h1>
-                            <p class="wrap-text" style="font-size: 18px; color: ${data.color}; font-weight: 600; margin-top: 10px;">${data.job}</p>
-                            <p style="font-size: 13px; color: #666; margin-top: 5px;">📧 ${data.email} | 📞 ${data.phone}</p>
+                <div style="padding: 60px 50px; flex-grow: 1; display: flex; flex-direction: column;">
+                    <div style="margin-bottom: 40px; border-bottom: 2px solid ${data.color}; padding-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <h1 class="wrap-text" style="font-size: 52px; font-weight: normal; color: #333; margin: 0; line-height: 1;">
+                                    ${data.name.split(' ')[0]} <span style="color: ${data.color};">${data.name.split(' ').slice(1).join(' ')}</span>
+                                </h1>
+                                <h2 class="wrap-text" style="font-size: 22px; font-weight: bold; color: #444; margin-top: 10px; text-transform: lowercase;">${data.job}</h2>
+                            </div>
+                            ${userPhoto ? `<img src="${userPhoto}" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd;">` : ''}
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 35px;">
-                        <h3 style="color: ${data.color}; font-weight: 800; text-transform: uppercase; border-left: 5px solid ${data.color}; padding-left: 15px; margin-bottom: 15px;">Professional Summary</h3>
-                        <p class="wrap-text" style="font-size: 14px; line-height: 1.8; color: #333;">${data.summary}</p>
-                    </div>
+                    <div style="display: grid; grid-template-columns: 220px 1fr; gap: 40px; flex-grow: 1;">
+                        <div style="border-right: 1px solid #ddd; padding-right: 20px; text-align: right;">
+                            <h3 style="color: ${data.color}; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Contact</h3>
+                            <p class="wrap-text" style="font-size: 13px; line-height: 1.8; color: #555;">
+                                ${data.address}<br>
+                                ${data.phone}<br>
+                                ${data.email}
+                            </p>
 
-                    <div style="flex-grow: 1; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px;">
-                        <div>
-                            <h3 style="color: ${data.color}; font-weight: 800; text-transform: uppercase; border-left: 5px solid ${data.color}; padding-left: 15px; margin-bottom: 15px;">Experience</h3>
-                            ${data.exp.map(e => `<p class="wrap-text" style="font-size: 14px; margin-bottom: 15px;">• ${e}</p>`).join('')}
+                            <h3 style="color: ${data.color}; font-weight: bold; margin-top: 40px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Skills</h3>
+                            <div style="font-size: 13px; line-height: 1.8; color: #555;">
+                                ${data.skills.map(s => `<div class="wrap-text">• ${s.trim()}</div>`).join('')}
+                            </div>
                         </div>
+
                         <div>
-                            <h3 style="color: ${data.color}; font-weight: 800; text-transform: uppercase; border-left: 5px solid ${data.color}; padding-left: 15px; margin-bottom: 15px;">Education</h3>
-                            ${data.edu.map(e => `<p class="wrap-text" style="font-size: 14px; margin-bottom: 10px;">• ${e}</p>`).join('')}
-                            
-                            <h3 style="color: ${data.color}; font-weight: 800; text-transform: uppercase; border-left: 5px solid ${data.color}; padding-left: 15px; margin-top: 30px; margin-bottom: 15px;">Skills</h3>
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                ${data.skills.map(s => `<span style="background: ${data.color}; color: white; padding: 4px 10px; border-radius: 4px; font-size: 11px;">${s}</span>`).join('')}
+                            <div style="margin-bottom: 30px;">
+                                <p class="wrap-text" style="font-size: 14px; line-height: 1.8; color: #333;">${data.summary}</p>
+                            </div>
+
+                            <h3 style="color: ${data.color}; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Experience</h3>
+                            <div style="margin-bottom: 30px;">
+                                ${data.exp.map(e => `<p class="wrap-text" style="font-size: 13px; margin-bottom: 12px; line-height: 1.6;">■ ${e}</p>`).join('')}
+                            </div>
+
+                            <h3 style="color: ${data.color}; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Education</h3>
+                            <div>
+                                ${data.edu.map(e => `<p class="wrap-text" style="font-size: 13px; margin-bottom: 10px; line-height: 1.6;">■ ${e}</p>`).join('')}
                             </div>
                         </div>
                     </div>
                 </div>
             `;
 
-            // Auto-scaling logic
+            // Auto-scale preview
             const area = document.getElementById('viewArea');
             const scale = (area.offsetWidth - 60) / 794; 
             canvas.style.transform = `scale(${scale < 1 ? scale : 1})`;
@@ -141,7 +157,7 @@
             
             const opt = {
                 margin: 0,
-                filename: 'VRTech_Resume.pdf',
+                filename: 'Professional_Resume.pdf',
                 html2canvas: { scale: 3, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
