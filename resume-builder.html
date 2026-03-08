@@ -3,104 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Resume Pro | VRTechTouch</title>
+    <title>Smart Resume Builder | VRTech</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; height: 100vh; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
         
-        .main-wrapper { display: grid; grid-template-columns: 400px 1fr; height: 100vh; }
+        .main-container { display: grid; grid-template-columns: 420px 1fr; height: 100vh; }
         
-        /* Sidebar Styling */
-        .config-sidebar { background: white; border-right: 1px solid #cbd5e1; overflow-y: auto; padding: 24px; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 4px; }
-        .form-input { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 12px; font-size: 14px; transition: 0.2s; }
-        .form-input:focus { border-color: #3b82f6; outline: none; ring: 2px; ring-color: #dbeafe; }
+        /* Sidebar */
+        .sidebar { background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 25px; }
+        .form-label { display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; text-transform: uppercase; }
+        .input-box { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 15px; outline: none; transition: 0.3s; }
+        .input-box:focus { border-color: #2563eb; ring: 2px #dbeafe; }
 
-        /* Preview Scaling */
-        .preview-zone { padding: 40px; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; }
+        /* Preview Zone */
+        .preview-area { background: #cbd5e1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; }
+        
+        /* Resume Page Styling - Critical Fixes */
         #resume-canvas { 
-            background: white; width: 210mm; min-height: 297mm; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform-origin: top center; transition: 0.3s ease-in-out;
+            background: white; 
+            width: 210mm; 
+            min-height: 297mm; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform-origin: top center;
+            /* मजकूर बाहेर जाऊ नये यासाठी महत्त्वाचे */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
-        /* Layout Specific Styles */
-        .section-header { border-bottom: 2px solid var(--theme-color); padding-bottom: 5px; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
+        #resume-canvas p, #resume-canvas div, #resume-canvas li, #resume-canvas h1 {
+            max-width: 100%;
+            white-space: normal !important; /* मजकूर आपोआप रॅप होण्यासाठी */
+        }
+
+        @media print {
+            body { background: none; }
+            .sidebar { display: none; }
+            #resume-canvas { box-shadow: none; transform: scale(1) !important; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="main-wrapper">
-        <aside class="config-sidebar">
-            <h2 class="text-xl font-bold text-blue-600 mb-6 flex items-center gap-2">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                Smart CV Builder
-            </h2>
+    <div class="main-container">
+        <aside class="sidebar">
+            <h2 class="text-2xl font-black text-blue-700 mb-6 italic">VRTech Resume Pro</h2>
 
-            <div class="input-group">
-                <label>Choose Layout Style</label>
-                <select id="layoutId" onchange="update()" class="form-input bg-blue-50 font-bold text-blue-700">
-                    <option value="executive">Executive (Split View)</option>
-                    <option value="modern">Modern (Full Width)</option>
-                    <option value="creative">Creative (Right Sidebar)</option>
-                    <option value="classic">Classic (Old School)</option>
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                <label class="form-label">लेआउट निवडा (Layout)</label>
+                <select id="layoutId" onchange="update()" class="input-box bg-white font-bold text-blue-800">
+                    <option value="executive">Executive Classic (Two Column)</option>
+                    <option value="modern">Modern Professional (Full Width)</option>
                     <option value="minimal">Minimalist Clean</option>
+                    <option value="creative">Creative Sidebar</option>
                 </select>
-            </div>
 
-            <div class="input-group">
-                <label>Theme Color</label>
+                <label class="form-label">थीम रंग (Theme Color)</label>
                 <input type="color" id="themeColor" value="#1e40af" oninput="update()" class="w-full h-10 rounded cursor-pointer border-none p-0">
             </div>
 
-            <div class="input-group border-t pt-4">
-                <label>Full Name</label>
-                <input type="text" id="inName" oninput="update()" class="form-input">
+            <label class="form-label">पूर्ण नाव</label>
+            <input type="text" id="inName" placeholder="उदा. विशाल पांढरे" oninput="update()" class="input-box">
+
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="form-label">ईमेल</label><input type="email" id="inEmail" oninput="update()" class="input-box"></div>
+                <div><label class="form-label">मोबाईल</label><input type="text" id="inPhone" oninput="update()" class="input-box"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <div class="input-group"><label>Email</label><input type="email" id="inEmail" oninput="update()" class="form-input"></div>
-                <div class="input-group"><label>Phone</label><input type="text" id="inPhone" oninput="update()" class="form-input"></div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="form-label">जन्म तारीख</label><input type="date" id="inDOB" oninput="update()" class="input-box"></div>
+                <div><label class="form-label">शहर</label><input type="text" id="inAddress" oninput="update()" class="input-box"></div>
             </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <div class="input-group"><label>Date of Birth</label><input type="date" id="inDOB" oninput="update()" class="form-input"></div>
-                <div class="input-group"><label>City</label><input type="text" id="inAddress" oninput="update()" class="form-input"></div>
-            </div>
+            <label class="form-label">प्रोफेशनल सारांश (Summary)</label>
+            <textarea id="inSummary" oninput="update()" rows="3" class="input-box" placeholder="तुमच्या कामाबद्दल थोडक्यात सांगा..."></textarea>
 
-            <div class="input-group">
-                <label>Summary</label>
-                <textarea id="inSummary" oninput="update()" rows="3" class="form-input"></textarea>
-            </div>
+            <label class="form-label">अनुभव (Experience)</label>
+            <textarea id="inExp" oninput="update()" rows="4" class="input-box" placeholder="उदा. Software Developer at Swiggy (2021-Present)"></textarea>
 
-            <div class="input-group">
-                <label>Experience</label>
-                <textarea id="inExp" oninput="update()" rows="4" class="form-input" placeholder="प्रत्येक मुद्दा नवीन ओळीवर..."></textarea>
-            </div>
+            <label class="form-label">शिक्षण (Education)</label>
+            <textarea id="inEdu" oninput="update()" rows="4" class="input-box" placeholder="उदा. B.Tech in CS (2018-2022)"></textarea>
 
-            <div class="input-group">
-                <label>Education</label>
-                <textarea id="inEdu" oninput="update()" rows="4" class="form-input"></textarea>
-            </div>
+            <label class="form-label">कौशल्ये (Skills - स्वल्पविराम द्या)</label>
+            <input type="text" id="inSkills" placeholder="उदा. Java, Python, HTML" oninput="update()" class="input-box">
 
-            <div class="input-group">
-                <label>Skills (Comma separated)</label>
-                <input type="text" id="inSkills" oninput="update()" class="form-input">
-            </div>
+            <label class="form-label">छंद / आवडी (Hobbies)</label>
+            <input type="text" id="inHobbies" oninput="update()" class="input-box">
 
-            <div class="input-group">
-                <label>Hobbies</label>
-                <input type="text" id="inHobbies" oninput="update()" class="form-input">
-            </div>
-
-            <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-black transition mt-4">Download Resume PDF</button>
+            <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-black transition-all transform hover:scale-105 mt-4">
+                Download PDF Resume
+            </button>
         </aside>
 
-        <main class="preview-zone" id="viewPane">
+        <main class="preview-area" id="previewArea">
             <div id="resume-canvas">
                 </div>
         </main>
@@ -108,17 +107,17 @@
 
     <script>
         function update() {
-            const config = {
-                name: document.getElementById('inName').value || "NAME SURNAME",
-                email: document.getElementById('inEmail').value || "email@example.com",
+            const data = {
+                name: document.getElementById('inName').value || "आपले नाव",
+                email: document.getElementById('inEmail').value || "example@mail.com",
                 phone: document.getElementById('inPhone').value || "+91 0000000000",
                 dob: document.getElementById('inDOB').value,
-                city: document.getElementById('inAddress').value || "City, State",
-                summary: document.getElementById('inSummary').value || "तुमच्याबद्दल थोडक्यात माहिती...",
+                city: document.getElementById('inAddress').value || "तुमचे शहर",
+                summary: document.getElementById('inSummary').value || "येथे तुमचा सारांश दिसेल...",
                 exp: document.getElementById('inExp').value.split('\n').filter(i => i.trim()),
                 edu: document.getElementById('inEdu').value.split('\n').filter(i => i.trim()),
                 skills: document.getElementById('inSkills').value.split(',').filter(i => i.trim()),
-                hobbies: document.getElementById('inHobbies').value || "Reading, Sports",
+                hobbies: document.getElementById('inHobbies').value || "वाचन, प्रवास",
                 color: document.getElementById('themeColor').value,
                 layout: document.getElementById('layoutId').value
             };
@@ -126,94 +125,111 @@
             const canvas = document.getElementById('resume-canvas');
             let html = "";
 
-            // --- 1. EXECUTIVE LAYOUT (Split Side View) ---
-            if (config.layout === 'executive') {
+            // --- Layout 1: Executive Classic (Two Columns) ---
+            if (data.layout === 'executive') {
                 html = `
-                    <div style="display: grid; grid-template-columns: 260px 1fr; min-height: 297mm;">
-                        <div style="background: ${config.color}; color: white; padding: 40px 30px;">
-                            <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.2); border-radius: 50%; margin-bottom: 30px; border: 4px solid white;"></div>
-                            <h3 style="border-bottom: 1px solid white; padding-bottom: 5px; margin-bottom: 15px; font-weight: 700;">CONTACT</h3>
-                            <p style="font-size: 12px; margin-bottom: 8px;">📞 ${config.phone}</p>
-                            <p style="font-size: 12px; margin-bottom: 8px;">📧 ${config.email}</p>
-                            <p style="font-size: 12px; margin-bottom: 8px;">📍 ${config.city}</p>
-                            ${config.dob ? `<p style="font-size: 12px;">📅 ${config.dob}</p>` : ''}
+                    <div style="display: grid; grid-template-columns: 280px 1fr; min-height: 297mm; width: 100%;">
+                        <div style="background: ${data.color}; color: white; padding: 50px 30px;">
+                            <div style="width: 130px; height: 130px; background: rgba(255,255,255,0.2); border-radius: 50%; border: 4px solid white; margin-bottom: 30px;"></div>
+                            <h3 style="border-bottom: 2px solid white; padding-bottom: 5px; margin-bottom: 15px; font-weight: bold;">संपर्क</h3>
+                            <p style="font-size: 13px; margin-bottom: 10px;">📧 ${data.email}</p>
+                            <p style="font-size: 13px; margin-bottom: 10px;">📞 ${data.phone}</p>
+                            <p style="font-size: 13px; margin-bottom: 10px;">📍 ${data.city}</p>
+                            ${data.dob ? `<p style="font-size: 13px;">📅 ${data.dob}</p>` : ''}
 
-                            <h3 style="border-bottom: 1px solid white; padding-bottom: 5px; margin-top: 40px; margin-bottom: 15px; font-weight: 700;">SKILLS</h3>
-                            <div style="font-size: 12px; line-height: 2;">${config.skills.map(s => `• ${s}`).join('<br>')}</div>
+                            <h3 style="border-bottom: 2px solid white; padding-bottom: 5px; margin-top: 40px; margin-bottom: 15px; font-weight: bold;">कौशल्ये</h3>
+                            <div style="font-size: 13px; line-height: 1.8;">${data.skills.map(s => `• ${s}`).join('<br>')}</div>
                             
-                            <h3 style="border-bottom: 1px solid white; padding-bottom: 5px; margin-top: 40px; margin-bottom: 15px; font-weight: 700;">HOBBIES</h3>
-                            <p style="font-size: 12px;">${config.hobbies}</p>
+                            <h3 style="border-bottom: 2px solid white; padding-bottom: 5px; margin-top: 40px; margin-bottom: 15px; font-weight: bold;">छंद</h3>
+                            <p style="font-size: 13px;">${data.hobbies}</p>
                         </div>
-                        <div style="padding: 50px;">
-                            <h1 style="font-size: 42px; font-weight: 900; color: ${config.color}; line-height: 1;">${config.name}</h1>
-                            <div style="height: 5px; width: 80px; background: ${config.color}; margin: 25px 0;"></div>
-                            <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 40px;">${config.summary}</p>
+                        <div style="padding: 60px 50px;">
+                            <h1 style="font-size: 45px; font-weight: 900; color: ${data.color}; line-height: 1.1; margin-bottom: 10px;">${data.name}</h1>
+                            <div style="height: 4px; width: 60px; background: ${data.color}; margin-bottom: 30px;"></div>
                             
-                            <h2 style="color: ${config.color}; font-weight: 800; border-bottom: 2px solid #eee; margin-bottom: 15px;">EXPERIENCE</h2>
-                            <ul style="font-size: 13px; list-style: disc; padding-left: 20px; margin-bottom: 35px;">
-                                ${config.exp.map(e => `<li style="margin-bottom: 10px;">${e}</li>`).join('')}
-                            </ul>
+                            <h2 style="color: ${data.color}; border-bottom: 1px solid #eee; margin-bottom: 15px; font-weight: 800;">प्रोफेशनल सारांश</h2>
+                            <p style="font-size: 14px; color: #444; line-height: 1.6; margin-bottom: 35px;">${data.summary}</p>
 
-                            <h2 style="color: ${config.color}; font-weight: 800; border-bottom: 2px solid #eee; margin-bottom: 15px;">EDUCATION</h2>
-                            <ul style="font-size: 13px; list-style: circle; padding-left: 20px;">
-                                ${config.edu.map(e => `<li style="margin-bottom: 10px;">${e}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            } 
-            
-            // --- 2. MODERN LAYOUT (Full Width Center) ---
-            else if (config.layout === 'modern') {
-                html = `
-                    <div style="padding: 40px; min-height: 297mm;">
-                        <div style="background: #f8fafc; border-left: 15px solid ${config.color}; padding: 30px; margin-bottom: 40px;">
-                            <h1 style="font-size: 48px; font-weight: 900; color: #1e293b;">${config.name}</h1>
-                            <p style="color: ${config.color}; font-weight: 600;">${config.email} | ${config.phone} | ${config.city}</p>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
-                            <div>
-                                <h3 style="color: ${config.color}; font-weight: 800; border-bottom: 1px solid ${config.color}; margin-bottom: 10px;">PROFILE</h3>
-                                <p style="font-size: 13px; line-height: 1.6;">${config.summary}</p>
-
-                                <h3 style="color: ${config.color}; font-weight: 800; border-bottom: 1px solid ${config.color}; margin-top: 30px; margin-bottom: 10px;">SKILLS</h3>
-                                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                    ${config.skills.map(s => `<span style="background: ${config.color}22; color: ${config.color}; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600;">${s}</span>`).join('')}
-                                </div>
+                            <h2 style="color: ${data.color}; border-bottom: 1px solid #eee; margin-bottom: 15px; font-weight: 800;">अनुभव</h2>
+                            <div style="font-size: 14px; color: #333; line-height: 1.8; margin-bottom: 35px;">
+                                ${data.exp.map(e => `<div style="margin-bottom: 12px;">• ${e}</div>`).join('')}
                             </div>
-                            <div>
-                                <h3 style="color: ${config.color}; font-weight: 800; border-bottom: 1px solid ${config.color}; margin-bottom: 10px;">WORK HISTORY</h3>
-                                <div style="font-size: 13px; white-space: pre-line;">${config.exp.join('\n\n')}</div>
 
-                                <h3 style="color: ${config.color}; font-weight: 800; border-bottom: 1px solid ${config.color}; margin-top: 30px; margin-bottom: 10px;">EDUCATION</h3>
-                                <div style="font-size: 13px; white-space: pre-line;">${config.edu.join('\n\n')}</div>
+                            <h2 style="color: ${data.color}; border-bottom: 1px solid #eee; margin-bottom: 15px; font-weight: 800;">शिक्षण</h2>
+                            <div style="font-size: 14px; color: #333; line-height: 1.8;">
+                                ${data.edu.map(e => `<div style="margin-bottom: 12px;">• ${e}</div>`).join('')}
                             </div>
                         </div>
                     </div>
                 `;
             }
 
-            // --- 3. CLASSIC LAYOUT (Simple Traditional) ---
+            // --- Layout 2: Modern Professional (Full Width) ---
+            else if (data.layout === 'modern') {
+                html = `
+                    <div style="padding: 50px; min-height: 297mm; width: 100%;">
+                        <div style="text-align: center; border-bottom: 3px solid ${data.color}; padding-bottom: 20px; margin-bottom: 30px;">
+                            <h1 style="font-size: 38px; font-weight: 900; color: #111;">${data.name}</h1>
+                            <p style="color: ${data.color}; font-weight: 600; font-size: 14px; margin-top: 5px;">
+                                ${data.email} | ${data.phone} | ${data.city}
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h3 style="background: ${data.color}; color: white; padding: 5px 15px; display: inline-block; border-radius: 4px; margin-bottom: 15px;">PROFILE</h3>
+                            <p style="font-size: 14px; line-height: 1.6; color: #333;">${data.summary}</p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                            <div>
+                                <h3 style="color: ${data.color}; border-bottom: 2px solid ${data.color}; margin-bottom: 15px; font-weight: bold;">EXPERIENCE</h3>
+                                <div style="font-size: 13px; line-height: 1.7;">${data.exp.map(e => `<p style="margin-bottom: 10px;">• ${e}</p>`).join('')}</div>
+                            </div>
+                            <div>
+                                <h3 style="color: ${data.color}; border-bottom: 2px solid ${data.color}; margin-bottom: 15px; font-weight: bold;">EDUCATION</h3>
+                                <div style="font-size: 13px; line-height: 1.7;">${data.edu.map(e => `<p style="margin-bottom: 10px;">• ${e}</p>`).join('')}</div>
+                                
+                                <h3 style="color: ${data.color}; border-bottom: 2px solid ${data.color}; margin-top: 25px; margin-bottom: 15px; font-weight: bold;">SKILLS</h3>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    ${data.skills.map(s => `<span style="border: 1px solid ${data.color}; padding: 3px 10px; border-radius: 20px; font-size: 11px;">${s}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- Layout 3: Minimalist (Clean) ---
             else {
                 html = `
-                    <div style="padding: 50px; text-align: center; min-height: 297mm;">
-                        <h1 style="font-size: 32px; font-weight: bold; border-bottom: 2px solid #333; display: inline-block; padding-bottom: 5px;">${config.name}</h1>
-                        <p style="margin-top: 10px; font-size: 14px;">${config.address} | ${config.phone} | ${config.email}</p>
+                    <div style="padding: 60px; min-height: 297mm; width: 100%; color: #333;">
+                        <h1 style="font-size: 32px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase;">${data.name}</h1>
+                        <p style="font-size: 12px; letter-spacing: 1px; margin-bottom: 40px;">${data.city} • ${data.phone} • ${data.email}</p>
                         
-                        <div style="text-align: left; margin-top: 40px;">
-                            <h3 style="background: #eee; padding: 5px 10px; font-weight: bold;">OBJECTIVE</h3>
-                            <p style="font-size: 14px; margin: 15px 0;">${config.summary}</p>
+                        <div style="margin-bottom: 40px;">
+                            <h4 style="font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 10px;">OBJECTIVE</h4>
+                            <p style="font-size: 13px;">${data.summary}</p>
+                        </div>
 
-                            <h3 style="background: #eee; padding: 5px 10px; font-weight: bold;">EXPERIENCE</h3>
-                            <div style="font-size: 14px; margin: 15px 0; white-space: pre-line;">${config.exp.join('\n')}</div>
+                        <div style="margin-bottom: 40px;">
+                            <h4 style="font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 10px;">WORK EXPERIENCE</h4>
+                            <div style="font-size: 13px;">${data.exp.map(e => `<p style="margin-bottom: 8px;">${e}</p>`).join('')}</div>
+                        </div>
 
-                            <h3 style="background: #eee; padding: 5px 10px; font-weight: bold;">EDUCATION</h3>
-                            <div style="font-size: 14px; margin: 15px 0; white-space: pre-line;">${config.edu.join('\n')}</div>
+                        <div style="margin-bottom: 40px;">
+                            <h4 style="font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 10px;">EDUCATION</h4>
+                            <div style="font-size: 13px;">${data.edu.map(e => `<p style="margin-bottom: 8px;">${e}</p>`).join('')}</div>
+                        </div>
 
-                            <h3 style="background: #eee; padding: 5px 10px; font-weight: bold;">ADDITIONAL INFO</h3>
-                            <p style="font-size: 14px; margin-top: 15px;"><b>Skills:</b> ${config.skills.join(', ')}</p>
-                            <p style="font-size: 14px;"><b>Hobbies:</b> ${config.hobbies}</p>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="width: 45%;">
+                                <h4 style="font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 10px;">SKILLS</h4>
+                                <p style="font-size: 13px;">${data.skills.join(', ')}</p>
+                            </div>
+                            <div style="width: 45%;">
+                                <h4 style="font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-bottom: 10px;">INTERESTS</h4>
+                                <p style="font-size: 13px;">${data.hobbies}</p>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -221,25 +237,27 @@
 
             canvas.innerHTML = html;
 
-            // --- Auto-Scaling Logic (Fixes the scrollbar issue) ---
-            const pane = document.getElementById('viewPane');
-            const scale = (pane.offsetWidth - 80) / 794; 
+            // --- Smart Scaling Logic ---
+            const area = document.getElementById('previewArea');
+            const scale = (area.offsetWidth - 80) / 794; 
             canvas.style.transform = `scale(${scale < 1 ? scale : 1})`;
         }
 
         function downloadPDF() {
             const element = document.getElementById('resume-canvas');
-            const oldTransform = element.style.transform;
-            element.style.transform = "scale(1)"; // Reset for high quality
-            
-            html2pdf().set({
+            const originalTransform = element.style.transform;
+            element.style.transform = "scale(1)"; // PDF साठी स्केल नॉर्मल करा
+
+            const opt = {
                 margin: 0,
-                filename: 'Resume_Professional.pdf',
+                filename: 'Professional_Resume.pdf',
                 image: { type: 'jpeg', quality: 1 },
-                html2canvas: { scale: 3, useCORS: true },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(element).save().then(() => {
-                element.style.transform = oldTransform;
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.transform = originalTransform; // पुन्हा मूळ स्केलवर या
             });
         }
 
