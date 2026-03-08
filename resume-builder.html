@@ -1,216 +1,249 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resume Builder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Template Resume Builder - Online Digital Seva</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; }
+        
+        .resume-preview {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 0 auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
 
-<style>
+        /* --- New Unique Templates CSS --- */
+        
+        /* 1. Classic: Standard Left Sidebar */
+        .template-classic { flex-direction: row; }
 
-body{
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#4facfe,#00f2fe);
-margin:0;
-padding:0;
-}
+        /* 2. Modern: Right Sidebar (Opposite of Classic) */
+        .template-modern { flex-direction: row-reverse; }
 
-.container{
-width:95%;
-max-width:1200px;
-margin:auto;
-padding:20px;
-display:flex;
-gap:20px;
-}
+        /* 3. Minimal: Full Width Top Header */
+        .template-minimal { flex-direction: column; }
+        .template-minimal .sidebar-accent { width: 100%; height: auto; padding: 20px; display: flex; flex-direction: row; align-items: center; justify-content: space-around; }
 
-.form-section{
-width:50%;
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.2);
-overflow:auto;
-height:90vh;
-}
+        /* 4. Premium: Dark Bordered Layout (Distinct from Classic) */
+        .template-premium { flex-direction: row; border: 15px solid #2c3e50; border-color: inherit; }
+        .template-premium .sidebar-accent { width: 30%; border-right: 2px solid rgba(255,255,255,0.2); }
 
-.preview-section{
-width:50%;
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 5px 20px rgba(0,0,0,0.2);
-}
+        /* 5. Royal: Elegant Top Banner with Floating Image */
+        .template-royal { flex-direction: column; }
+        .template-royal .sidebar-accent { width: 100%; height: 250px; clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%); padding-top: 40px; }
+        .template-royal .main-content { padding-top: 50px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .template-royal .full-width { grid-column: span 2; }
 
-h2{
-border-bottom:2px solid #eee;
-padding-bottom:5px;
-}
+        /* 6. Executive: Clean Professional (No Sidebar Color) */
+        .template-executive { flex-direction: column; }
+        .template-executive .sidebar-accent { width: 100%; background: #ffffff !important; color: #000 !important; border-bottom: 5px solid; border-color: inherit; height: auto; padding: 40px; flex-direction: row; justify-content: space-between; }
+        .template-executive .main-content { padding: 40px; }
+        .template-executive .sidebar-accent .text-white { color: #000 !important; }
 
-input,textarea,select{
-width:100%;
-padding:8px;
-margin:5px 0 10px;
-border-radius:5px;
-border:1px solid #ccc;
-}
+        @media print {
+            @page { size: A4; margin: 0; }
+            body { background: none; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .resume-preview { position: fixed; top: 0; left: 0; width: 210mm; height: 297mm; margin: 0; box-shadow: none; z-index: 9999; }
+        }
 
-button{
-background:#4facfe;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:5px;
-cursor:pointer;
-}
-
-button:hover{
-background:#2c8ef4;
-}
-
-.resume{
-padding:20px;
-}
-
-.resume img{
-width:100px;
-height:100px;
-border-radius:50%;
-object-fit:cover;
-}
-
-.resume h1{
-margin:0;
-}
-
-</style>
-
+        .sidebar-accent { width: 35%; color: white; min-width: 35%; transition: all 0.3s ease; }
+        .main-content { flex: 1; padding: 30px; color: #000000; display: flex; flex-direction: column; font-weight: 500; }
+        
+        .template-card { cursor: pointer; border: 2px solid transparent; transition: 0.3s; padding: 12px; border-radius: 10px; background: #fff; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .template-card.active { border-color: #3b82f6; background-color: #eff6ff; transform: scale(1.05); }
+    </style>
 </head>
 <body>
 
-<div class="container">
+<div id="app" class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <div class="no-print bg-white p-6 rounded-xl shadow-lg h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600 border-b pb-2">Resume Editor</h2>
+            
+            <div class="mb-8">
+                <label class="block font-semibold mb-4 text-gray-800">Select Template Design:</label>
+                <div class="grid grid-cols-3 gap-4">
+                    <div @click="selectedTemplate = 'classic'" :class="['template-card', selectedTemplate === 'classic' ? 'active' : '']">
+                        <i class="fas fa-columns text-xl mb-1 text-blue-500"></i><p class="text-[11px] font-bold">Classic</p>
+                    </div>
+                    <div @click="selectedTemplate = 'modern'" :class="['template-card', selectedTemplate === 'modern' ? 'active' : '']">
+                        <i class="fas fa-indent text-xl mb-1 text-purple-500"></i><p class="text-[11px] font-bold">Modern</p>
+                    </div>
+                    <div @click="selectedTemplate = 'minimal'" :class="['template-card', selectedTemplate === 'minimal' ? 'active' : '']">
+                        <i class="fas fa-window-maximize text-xl mb-1 text-green-500"></i><p class="text-[11px] font-bold">Minimal</p>
+                    </div>
+                    <div @click="selectedTemplate = 'premium'" :class="['template-card', selectedTemplate === 'premium' ? 'active' : '']">
+                        <i class="fas fa-award text-xl mb-1 text-yellow-600"></i><p class="text-[11px] font-bold">Premium</p>
+                    </div>
+                    <div @click="selectedTemplate = 'royal'" :class="['template-card', selectedTemplate === 'royal' ? 'active' : '']">
+                        <i class="fas fa-crown text-xl mb-1 text-red-500"></i><p class="text-[11px] font-bold">Royal</p>
+                    </div>
+                    <div @click="selectedTemplate = 'executive'" :class="['template-card', selectedTemplate === 'executive' ? 'active' : '']">
+                        <i class="fas fa-user-tie text-xl mb-1 text-gray-700"></i><p class="text-[11px] font-bold">Executive</p>
+                    </div>
+                </div>
+            </div>
 
-<div class="form-section">
+            <div class="mb-6">
+                <label class="block font-semibold mb-2">Theme Color:</label>
+                <input type="color" v-model="themeColor" class="h-10 w-20 cursor-pointer rounded">
+            </div>
 
-<h2>Personal Information</h2>
+            <section class="mb-8">
+                <h3 class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded">Personal Information</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <input v-model="user.name" type="text" class="col-span-2 border p-2 rounded" placeholder="Full Name">
+                    <input v-model="user.email" type="email" class="border p-2 rounded" placeholder="Email">
+                    <input v-model="user.phone" type="text" class="border p-2 rounded" placeholder="Phone">
+                    <input v-model="user.address" type="text" class="col-span-2 border p-2 rounded" placeholder="Address">
+                    <input type="file" @change="handlePhoto" class="col-span-2 border p-1 rounded text-sm">
+                </div>
+            </section>
 
-<input id="name" placeholder="Full Name">
-<input id="mobile" placeholder="Mobile Number">
-<input id="email" placeholder="Email">
-<input id="address" placeholder="Address">
-<input type="file" id="photo">
+            <section class="mb-8">
+                <h3 class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded">Objective</h3>
+                <textarea v-model="user.objective" class="w-full border p-2 rounded h-20" placeholder="Your career goals..."></textarea>
+            </section>
 
-<h2>Career Objective</h2>
-<textarea id="objective" rows="3"></textarea>
+            <section class="mb-8">
+                <div class="flex justify-between items-center mb-4 bg-gray-100 p-2 rounded">
+                    <h3 class="font-bold text-gray-700">Education</h3>
+                    <button @click="addItem('education')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">+ Add</button>
+                </div>
+                <div v-for="(edu, index) in user.education" :key="index" class="mb-4 relative border-b pb-2">
+                    <button @click="removeItem('education', index)" class="absolute right-0 text-red-500 text-xs">Remove</button>
+                    <input v-model="edu.degree" placeholder="Degree" class="w-full mb-1 p-1 border rounded text-sm">
+                    <input v-model="edu.school" placeholder="School" class="w-full mb-1 p-1 border rounded text-sm">
+                    <input v-model="edu.year" placeholder="Year" class="w-full p-1 border rounded text-sm">
+                </div>
+            </section>
 
-<h2>Education Details</h2>
-<input id="edu1" placeholder="10th Details">
-<input id="edu2" placeholder="12th Details">
-<input id="edu3" placeholder="Graduation">
-<input id="edu4" placeholder="Other Education">
+            <section class="mb-8">
+                <div class="flex justify-between items-center mb-4 bg-gray-100 p-2 rounded">
+                    <h3 class="font-bold text-gray-700">Experience</h3>
+                    <button @click="addItem('experience')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">+ Add</button>
+                </div>
+                <div v-for="(exp, index) in user.experience" :key="index" class="mb-4 relative border-b pb-2">
+                    <button @click="removeItem('experience', index)" class="absolute right-0 text-red-500 text-xs">Remove</button>
+                    <input v-model="exp.title" placeholder="Job Title" class="w-full mb-1 p-1 border rounded text-sm">
+                    <input v-model="exp.company" placeholder="Company" class="w-full mb-1 p-1 border rounded text-sm">
+                    <input v-model="exp.duration" placeholder="Duration" class="w-full p-1 border rounded text-sm">
+                </div>
+            </section>
 
-<h2>Experience</h2>
-<input id="exp" placeholder="Company Name & Position">
+            <section class="mb-8">
+                <h3 class="font-bold text-gray-700 mb-4 bg-gray-100 p-2 rounded">Skills (Comma separated)</h3>
+                <input v-model="skillInput" @input="processSkills" placeholder="HTML, CSS, JS..." class="w-full border p-2 rounded">
+            </section>
 
-<h2>Skills</h2>
-<input id="skills" placeholder="Example: Computer, Typing, Excel">
+            <button @click="printResume" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold shadow-md hover:bg-green-700">
+                <i class="fas fa-print mr-2"></i> Print / Download PDF
+            </button>
+        </div>
 
-<h2>Projects / Achievements</h2>
-<textarea id="projects"></textarea>
+        <div class="flex justify-center">
+            <div id="resume-to-print" :class="['resume-preview', 'template-' + selectedTemplate]" :style="{ borderColor: themeColor }">
+                <div class="sidebar-accent p-6 flex flex-col items-center text-center" :style="{ backgroundColor: themeColor }">
+                    <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden mb-12 bg-gray-100 shrink-0 shadow-lg">
+                        <img v-if="user.photo" :src="user.photo" class="w-full h-full object-cover">
+                        <i v-else class="fas fa-user text-6xl mt-6 text-gray-400"></i>
+                    </div>
+                    <div class="text-white w-full">
+                        <h2 class="text-xl font-extrabold uppercase mb-1 leading-tight mt-2">{{ user.name || 'Your Name' }}</h2>
+                        <p class="text-xs opacity-80 mb-6">Contact Details</p>
+                        <div class="text-left w-full space-y-4 text-sm font-medium">
+                            <p v-if="user.phone" class="flex items-center"><i class="fas fa-phone w-6"></i> {{ user.phone }}</p>
+                            <p v-if="user.email" class="flex items-center break-all"><i class="fas fa-envelope w-6"></i> {{ user.email }}</p>
+                            <p v-if="user.address" class="flex items-center"><i class="fas fa-map-marker-alt w-6"></i> {{ user.address }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 text-left w-full text-white">
+                        <h3 class="font-bold uppercase border-b-2 border-white/30 mb-4 pb-1">Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span v-for="skill in user.skills" class="text-xs bg-white/20 px-3 py-1 rounded-full font-bold border border-white/10">{{ skill }}</span>
+                        </div>
+                    </div>
+                </div>
 
-<h2>Template Selection</h2>
-<select id="template">
-<option value="1">Modern Blue</option>
-<option value="2">Minimal Gray</option>
-<option value="3">Professional Dark</option>
-</select>
+                <div class="main-content">
+                    <section class="mb-8 full-width">
+                        <h3 class="text-lg font-extrabold uppercase mb-2 border-b-2" :style="{ borderColor: '#000', color: '#000' }">Career Objective</h3>
+                        <p class="text-sm leading-relaxed text-black font-semibold">{{ user.objective || 'Describe your career goals...' }}</p>
+                    </section>
 
-<button onclick="generateResume()">Generate Resume</button>
-<button onclick="window.print()">Print</button>
+                    <section class="mb-8 full-width">
+                        <h3 class="text-lg font-extrabold uppercase mb-3 border-b-2" :style="{ borderColor: '#000', color: '#000' }">Experience</h3>
+                        <div v-for="exp in user.experience" class="mb-4">
+                            <div class="flex justify-between font-bold text-sm text-black">
+                                <span class="text-base">{{ exp.title }}</span>
+                                <span class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ exp.duration }}</span>
+                            </div>
+                            <div class="text-sm italic font-bold text-gray-700">{{ exp.company }}</div>
+                        </div>
+                    </section>
 
-</div>
+                    <section class="mb-8 full-width">
+                        <h3 class="text-lg font-extrabold uppercase mb-3 border-b-2" :style="{ borderColor: '#000', color: '#000' }">Education</h3>
+                        <div v-for="edu in user.education" class="mb-4 text-black">
+                            <div class="flex justify-between font-bold text-sm">
+                                <span class="text-base">{{ edu.degree }}</span>
+                                <span class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ edu.year }}</span>
+                            </div>
+                            <div class="text-sm font-bold text-gray-700">{{ edu.school }}</div>
+                        </div>
+                    </section>
 
-<div class="preview-section">
-
-<h2>Live Preview</h2>
-
-<div id="resumePreview" class="resume">
-
-<img id="previewPhoto">
-
-<h1 id="previewName"></h1>
-
-<p id="previewContact"></p>
-
-<h3>Career Objective</h3>
-<p id="previewObjective"></p>
-
-<h3>Education</h3>
-<p id="previewEducation"></p>
-
-<h3>Experience</h3>
-<p id="previewExp"></p>
-
-<h3>Skills</h3>
-<p id="previewSkills"></p>
-
-<h3>Projects & Achievements</h3>
-<p id="previewProjects"></p>
-
-</div>
-
-</div>
-
+                    <p class="mt-auto text-[10px] text-black font-bold border-t pt-2 italic">Generated via Online Digital Seva Portal</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-
-function generateResume(){
-
-document.getElementById("previewName").innerText =
-document.getElementById("name").value;
-
-document.getElementById("previewContact").innerText =
-document.getElementById("mobile").value + " | " +
-document.getElementById("email").value + " | " +
-document.getElementById("address").value;
-
-document.getElementById("previewObjective").innerText =
-document.getElementById("objective").value;
-
-document.getElementById("previewEducation").innerText =
-document.getElementById("edu1").value + "\n" +
-document.getElementById("edu2").value + "\n" +
-document.getElementById("edu3").value + "\n" +
-document.getElementById("edu4").value;
-
-document.getElementById("previewExp").innerText =
-document.getElementById("exp").value;
-
-document.getElementById("previewSkills").innerText =
-document.getElementById("skills").value;
-
-document.getElementById("previewProjects").innerText =
-document.getElementById("projects").value;
-
-let photo=document.getElementById("photo").files[0];
-
-if(photo){
-
-let reader=new FileReader();
-
-reader.onload=function(e){
-
-document.getElementById("previewPhoto").src=e.target.result;
-
-}
-
-reader.readAsDataURL(photo);
-
-}
-
-}
-
+    const { createApp } = Vue;
+    createApp({
+        data() {
+            return {
+                themeColor: '#2c3e50',
+                skillInput: '',
+                selectedTemplate: 'classic',
+                user: {
+                    name: '', email: '', phone: '', address: '', photo: null, objective: '',
+                    education: [{ degree: '', school: '', year: '' }],
+                    experience: [{ title: '', company: '', duration: '' }],
+                    skills: []
+                }
+            }
+        },
+        methods: {
+            addItem(type) { this.user[type].push({}); },
+            removeItem(type, index) { this.user[type].splice(index, 1); },
+            handlePhoto(e) { 
+                const file = e.target.files[0];
+                if(file) this.user.photo = URL.createObjectURL(file);
+            },
+            processSkills() {
+                this.user.skills = this.skillInput.split(',').map(s => s.trim()).filter(s => s !== '');
+            },
+            printResume() { window.print(); }
+        }
+    }).mount('#app');
 </script>
-
 </body>
 </html>
