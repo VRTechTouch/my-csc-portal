@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .preview-container { background: white; min-height: 297mm; width: 210mm; padding: 20mm; margin: auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+            <h2 class="text-2xl font-bold mb-6 text-blue-600">Resume Details</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium">पूर्ण नाव</label>
+                    <input type="text" id="inName" oninput="update()" placeholder="उदा. राजेश पाटील" class="w-full p-2 border rounded-md mt-1">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium">ईमेल</label>
+                        <input type="email" id="inEmail" oninput="update()" placeholder="example@mail.com" class="w-full p-2 border rounded-md mt-1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">मोबाईल</label>
+                        <input type="text" id="inPhone" oninput="update()" placeholder="+91 9876543210" class="w-full p-2 border rounded-md mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">प्रोफेशनल सारांश (Summary)</label>
+                    <textarea id="inSummary" oninput="update()" rows="3" class="w-full p-2 border rounded-md mt-1"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">कौशल्ये (Skills - स्वल्पविराम देऊन लिहा)</label>
+                    <input type="text" id="inSkills" oninput="update()" placeholder="HTML, CSS, JavaScript" class="w-full p-2 border rounded-md mt-1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium">अनुभव / शिक्षण</label>
+                    <textarea id="inExp" oninput="update()" rows="4" placeholder="तुमचा कामाचा अनुभव किंवा पदवी..." class="w-full p-2 border rounded-md mt-1"></textarea>
+                </div>
+                
+                <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition">
+                    Download PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <div id="resume-preview" class="preview-container">
+                <div class="border-b-2 border-blue-600 pb-4 mb-6 text-center">
+                    <h1 id="outName" class="text-4xl font-extrabold uppercase text-gray-800">Your Name</h1>
+                    <div class="flex justify-center gap-4 text-gray-600 mt-2 text-sm">
+                        <span id="outEmail">email@example.com</span> | 
+                        <span id="outPhone">+91 0000000000</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Summary</h3>
+                    <p id="outSummary" class="text-gray-700 leading-relaxed text-sm">Professional profile description goes here...</p>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Skills</h3>
+                    <div id="outSkills" class="flex flex-wrap gap-2">
+                        </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Experience & Education</h3>
+                    <div id="outExp" class="text-gray-700 whitespace-pre-line text-sm">Details about your background...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function update() {
+            document.getElementById('outName').innerText = document.getElementById('inName').value || "Your Name";
+            document.getElementById('outEmail').innerText = document.getElementById('inEmail').value || "email@example.com";
+            document.getElementById('outPhone').innerText = document.getElementById('inPhone').value || "+91 0000000000";
+            document.getElementById('outSummary').innerText = document.getElementById('inSummary').value || "Professional profile description goes here...";
+            document.getElementById('outExp').innerText = document.getElementById('inExp').value || "Details about your background...";
+
+            // Skills logic
+            const skills = document.getElementById('inSkills').value.split(',');
+            const skillContainer = document.getElementById('outSkills');
+            skillContainer.innerHTML = "";
+            skills.forEach(skill => {
+                if(skill.trim() !== "") {
+                    let span = document.createElement('span');
+                    span.className = "bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold text-gray-700 border border-gray-300";
+                    span.innerText = skill.trim();
+                    skillContainer.appendChild(span);
+                }
+            });
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('resume-preview');
+            const opt = {
+                margin: 0,
+                filename: 'Professional_Resume.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
