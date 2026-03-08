@@ -3,119 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Resume Builder</title>
+    <title>Premium AI Resume Builder | VRTechTouch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af', // Blue 800
+                        secondary: '#f3f4f6', // Gray 100
+                        accent: '#2563eb', // Blue 600
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .preview-container { background: white; min-height: 297mm; width: 210mm; padding: 20mm; margin: auto; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        .input-field { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 4px; font-size: 14px; transition: all 0.2s; }
+        .input-field:focus { border-color: #2563eb; ring: 2px; ring-color: #bfdbfe; outline: none; }
+        .form-section { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        .section-title { font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        /* A4 Preview Styling */
+        .preview-container { background: white; width: 210mm; min-height: 297mm; padding: 15mm 20mm; margin: auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); position: relative; overflow: hidden; }
+        .resume-header { border-bottom: 3px solid #1e40af; padding-bottom: 15px; margin-bottom: 20px; }
+        .resume-section-title { font-size: 16px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 1px; margin-top: 20px; margin-bottom: 8px; }
     </style>
 </head>
-<body class="p-4 md:p-10">
+<body>
 
-    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-items">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-primary">VR<span class="text-accent">Tech</span>Touch</span>
+                <span class="text-xs bg-accent text-white px-2 py-1 rounded-full font-medium">CV Builder</span>
+            </div>
+            <button onclick="downloadPDF()" class="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-full font-semibold hover:bg-black transition text-sm shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Download PDF
+            </button>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         
-        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-            <h2 class="text-2xl font-bold mb-6 text-blue-600">Resume Details</h2>
+        <div class="space-y-6 lg:sticky lg:top-24">
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium">पूर्ण नाव</label>
-                    <input type="text" id="inName" oninput="update()" placeholder="उदा. राजेश पाटील" class="w-full p-2 border rounded-md mt-1">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium">ईमेल</label>
-                        <input type="email" id="inEmail" oninput="update()" placeholder="example@mail.com" class="w-full p-2 border rounded-md mt-1">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium">मोबाईल</label>
-                        <input type="text" id="inPhone" oninput="update()" placeholder="+91 9876543210" class="w-full p-2 border rounded-md mt-1">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">प्रोफेशनल सारांश (Summary)</label>
-                    <textarea id="inSummary" oninput="update()" rows="3" class="w-full p-2 border rounded-md mt-1"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">कौशल्ये (Skills - स्वल्पविराम देऊन लिहा)</label>
-                    <input type="text" id="inSkills" oninput="update()" placeholder="HTML, CSS, JavaScript" class="w-full p-2 border rounded-md mt-1">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">अनुभव / शिक्षण</label>
-                    <textarea id="inExp" oninput="update()" rows="4" placeholder="तुमचा कामाचा अनुभव किंवा पदवी..." class="w-full p-2 border rounded-md mt-1"></textarea>
+            <div class="flex gap-3 bg-white p-4 rounded-xl shadow border border-gray-200">
+                <button onclick="fillDemo()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-lg hover:bg-gray-200 text-sm">Fill Demo Data</button>
+                <button onclick="clearForm()" class="flex-1 bg-red-50 text-red-600 font-medium py-2 rounded-lg hover:bg-red-100 text-sm">Clear All</button>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    वैयक्तिक तपशील (Personal Details)
                 </div>
                 
-                <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition">
-                    Download PDF
-                </button>
-            </div>
-        </div>
-
-        <div class="overflow-x-auto">
-            <div id="resume-preview" class="preview-container">
-                <div class="border-b-2 border-blue-600 pb-4 mb-6 text-center">
-                    <h1 id="outName" class="text-4xl font-extrabold uppercase text-gray-800">Your Name</h1>
-                    <div class="flex justify-center gap-4 text-gray-600 mt-2 text-sm">
-                        <span id="outEmail">email@example.com</span> | 
-                        <span id="outPhone">+91 0000000000</span>
+                <div class="flex items-center gap-4 mb-4">
+                    <img id="inPhotoPreview" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200">
+                    <div>
+                        <input type="file" id="inPhoto" accept="image/*" onchange="previewImage(this)" class="hidden">
+                        <label for="inPhoto" class="bg-gray-100 text-sm text-gray-700 px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-200 font-medium">Upload Photo</label>
+                        <p class="text-xs text-gray-500 mt-1">Max 1MB, JPG/PNG</p>
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Summary</h3>
-                    <p id="outSummary" class="text-gray-700 leading-relaxed text-sm">Professional profile description goes here...</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                        <label class="text-sm font-medium text-gray-600">पूर्ण नाव (Full Name)</label>
+                        <input type="text" id="inName" oninput="update()" placeholder="उदा. विशाल पांढरे" class="input-field">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">ईमेल (Email)</label>
+                        <input type="email" id="inEmail" oninput="update()" placeholder="xyz@gmail.com" class="input-field">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">मोबाईल (Phone)</label>
+                        <input type="text" id="inPhone" oninput="update()" placeholder="+91 96654..." class="input-field">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-sm font-medium text-gray-600">पत्ता (Address)</label>
+                        <input type="text" id="inAddress" oninput="update()" placeholder="अमरावती, महाराष्ट्र" class="input-field">
+                    </div>
                 </div>
+            </div>
 
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Skills</h3>
-                    <div id="outSkills" class="flex flex-wrap gap-2">
-                        </div>
+            <div class="form-section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    सारांश (Professional Summary)
+                </div>
+                <textarea id="inSummary" oninput="update()" rows="4" placeholder="तुमच्या अनुभवाबद्दल आणि ध्येयाबद्दल थोडक्यात लिहा..." class="input-field"></textarea>
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    कौशल्ये (Skills)
+                </div>
+                <p class="text-xs text-gray-500 mb-2">महत्वाची कौशल्ये 'स्वल्पविराम' (comma) देऊन लिहा.</p>
+                <input type="text" id="inSkills" oninput="update()" placeholder="Tally, MS-Office, Marathi Typing, English Typing" class="input-field">
+            </div>
+
+            <div class="form-section">
+                <div class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    अनुभव आणि शिक्षण (Background)
+                </div>
+                <p class="text-xs text-gray-500 mb-2">नवीन ओळीवर लिहीत जा (Press Enter for new point).</p>
+                <textarea id="inExp" oninput="update()" rows="6" placeholder="- MSCIT, 2022 (85%)&#10;- B.Com, Amravati University, 2021&#10;- 1 Year Experience as CSC Operator" class="input-field"></textarea>
+            </div>
+            
+        </div>
+
+        <div class="overflow-auto bg-gray-200 p-6 rounded-2xl shadow-inner border border-gray-300">
+            <div id="resume-preview" class="preview-container text-sm text-gray-800">
+                
+                <div class="flex items-center gap-6 resume-header">
+                    <img id="outPhoto" src="https://via.placeholder.com/80" class="w-24 h-24 rounded-full object-cover border-4 border-gray-100 shadow-md">
+                    <div class="flex-1">
+                        <h1 id="outName" class="text-4xl font-extrabold uppercase text-gray-900 tracking-tight">Your Name</h1>
+                        <p class="text-gray-600 mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium">
+                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-accent" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg><span id="outEmail">email@example.com</span></span>
+                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-accent" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.519.728a11.982 11.982 0 005.712 5.712l.728-1.519a1 1 0 011.06-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg><span id="outPhone">+91 0000000000</span></span>
+                            <span class="flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-accent" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg><span id="outAddress">Address, City</span></span>
+                        </p>
+                    </div>
                 </div>
 
                 <div>
-                    <h3 class="text-lg font-bold text-blue-600 uppercase mb-2">Experience & Education</h3>
-                    <div id="outExp" class="text-gray-700 whitespace-pre-line text-sm">Details about your background...</div>
+                    <h3 class="resume-section-title">Summary</h3>
+                    <p id="outSummary" class="text-gray-700 leading-relaxed text-sm">प्रवेशिका सारांश येथे दिसेल...</p>
                 </div>
+
+                <div class="mt-6">
+                    <h3 class="resume-section-title">Skills</h3>
+                    <div id="outSkills" class="flex flex-wrap gap-2 pt-1">
+                        <span class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold border border-blue-100">Communication</span>
+                        <span class="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold border border-blue-100">Problem Solving</span>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="resume-section-title">Experience & Education</h3>
+                    <ul id="outExp" class="list-disc list-outside pl-5 space-y-2 text-gray-700 text-sm">
+                        <li>तुमचा अनुभव किंवा शिक्षणाचे तपशील येथे दिसतील.</li>
+                    </ul>
+                </div>
+
             </div>
         </div>
 
-    </div>
+    </main>
+
+    <footer class="text-center py-10 text-gray-500 text-sm border-t border-gray-100 mt-10">
+        &copy; 2024 VRTechTouch CSC Portal. All rights reserved.
+    </footer>
 
     <script>
+        // Real-time Update Function
         function update() {
             document.getElementById('outName').innerText = document.getElementById('inName').value || "Your Name";
             document.getElementById('outEmail').innerText = document.getElementById('inEmail').value || "email@example.com";
             document.getElementById('outPhone').innerText = document.getElementById('inPhone').value || "+91 0000000000";
-            document.getElementById('outSummary').innerText = document.getElementById('inSummary').value || "Professional profile description goes here...";
-            document.getElementById('outExp').innerText = document.getElementById('inExp').value || "Details about your background...";
+            document.getElementById('outAddress').innerText = document.getElementById('inAddress').value || "Address, City";
+            document.getElementById('outSummary').innerText = document.getElementById('inSummary').value || "प्रवेशिका सारांश येथे दिसेल...";
 
-            // Skills logic
+            // Skills logic (Modern Tag Style)
             const skills = document.getElementById('inSkills').value.split(',');
             const skillContainer = document.getElementById('outSkills');
             skillContainer.innerHTML = "";
-            skills.forEach(skill => {
-                if(skill.trim() !== "") {
-                    let span = document.createElement('span');
-                    span.className = "bg-gray-100 px-3 py-1 rounded-full text-xs font-semibold text-gray-700 border border-gray-300";
-                    span.innerText = skill.trim();
-                    skillContainer.appendChild(span);
-                }
-            });
+            if (document.getElementById('inSkills').value.trim() === "") {
+                skillContainer.innerHTML = '<span class="text-gray-400 italic text-xs">Skills are not provided.</span>';
+            } else {
+                skills.forEach(skill => {
+                    if(skill.trim() !== "") {
+                        let span = document.createElement('span');
+                        span.className = "bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-medium border border-blue-100";
+                        span.innerText = skill.trim();
+                        skillContainer.appendChild(span);
+                    }
+                });
+            }
+
+            // Experience/Education logic (List Style)
+            const expText = document.getElementById('inExp').value;
+            const expContainer = document.getElementById('outExp');
+            expContainer.innerHTML = "";
+            if (expText.trim() === "") {
+                let li = document.createElement('li');
+                li.innerText = "तुमचा अनुभव किंवा शिक्षणाचे तपशील येथे दिसतील.";
+                expContainer.appendChild(li);
+            } else {
+                expText.split('\n').forEach(line => {
+                    if(line.trim() !== "") {
+                        let li = document.createElement('li');
+                        li.innerText = line.replace(/^- /, '').trim(); // Remove leading dash if present
+                        expContainer.appendChild(li);
+                    }
+                });
+            }
         }
 
+        // Image Preview Logic
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('inPhotoPreview').src = e.target.result;
+                    document.getElementById('outPhoto').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Demo Data Function
+        function fillDemo() {
+            document.getElementById('inName').value = "विशाल गणेश पांढरे";
+            document.getElementById('inEmail').value = "vishal.p@gmail.com";
+            document.getElementById('inPhone').value = "+91 9665412345";
+            document.getElementById('inAddress').value = "गाडगे नगर, अमरावती";
+            document.getElementById('inSummary').value = "प्रमाणित CSC ऑपरेटर म्हणून २ वर्षांचा अनुभव. Tally आणि MS-Office मध्ये पारंगत. डिजिटल सेवा आणि सरकारी योजनांची माहिती लोकांपर्यंत पोहोचवण्याचे कौशल्य.";
+            document.getElementById('inSkills').value = "Tally ERP 9, MS-Office, Marathi Typing, English Typing (40 wpm), CSC Services, Customer Relation";
+            document.getElementById('inExp').value = "- B.Com, Amravati University, 2021 (72%)\n- MSCIT Certification, 2021 (90%)\n- English Typing 40 WPM Certification, 2020\n- Working as CSC Operator at Amravati Center since 2022.";
+            update();
+        }
+
+        // Clear Form Function
+        function clearForm() {
+            document.getElementById('inName').value = "";
+            document.getElementById('inEmail').value = "";
+            document.getElementById('inPhone').value = "";
+            document.getElementById('inAddress').value = "";
+            document.getElementById('inSummary').value = "";
+            document.getElementById('inSkills').value = "";
+            document.getElementById('inExp').value = "";
+            document.getElementById('inPhotoPreview').src = "https://via.placeholder.com/80";
+            document.getElementById('outPhoto').src = "https://via.placeholder.com/80";
+            update();
+        }
+
+        // PDF Download Function
         function downloadPDF() {
             const element = document.getElementById('resume-preview');
+            const name = document.getElementById('inName').value || "Resume";
             const opt = {
                 margin: 0,
-                filename: 'Professional_Resume.pdf',
+                filename: name.replace(/\s+/g, '_') + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
+                html2canvas: { scale: 3, useCORS: true }, // Higher scale for quality
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
         }
+
+        // Initialize with default update
+        update();
     </script>
 </body>
 </html>
