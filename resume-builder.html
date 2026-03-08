@@ -14,77 +14,91 @@
         .sidebar { background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 25px; }
         .preview-area { background: #cbd5e1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
         
-        /* --- महत्त्वाचे: मजकूर रॅपिंग नियम --- */
+        /* --- Resume Page Structure --- */
         #resume-canvas { 
             background: white; 
             width: 210mm; 
-            min-height: 297mm; 
+            min-height: 297mm; /* A4 Height */
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             transform-origin: top center;
-            /* मजकूर पानाच्या बाहेर जाऊ नये म्हणून हे आवश्यक आहे */
-            overflow-wrap: anywhere; 
-            word-break: break-all;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        #resume-canvas p, #resume-canvas div, #resume-canvas span, #resume-canvas h1, #resume-canvas h2 {
-            white-space: pre-wrap !important; /* नवीन ओळ आणि स्पेस टिकवण्यासाठी */
-            overflow-wrap: anywhere !important;
+        /* मजकूर पानाच्या बाहेर जाऊ नये यासाठी कडक नियम */
+        #resume-canvas * {
+            overflow-wrap: anywhere !important; 
             word-break: break-word !important;
-            max-width: 100%;
+            white-space: pre-wrap !important;
         }
 
         .input-box { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 12px; }
+        .profile-img { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; border: 3px solid white; }
     </style>
 </head>
 <body>
 
     <div class="main-container">
         <aside class="sidebar">
-            <h2 class="text-2xl font-bold text-blue-700 mb-4">Resume Settings</h2>
+            <h2 class="text-2xl font-bold text-blue-700 mb-4 italic">VRTech Resume Pro</h2>
             
-            <label class="text-xs font-bold uppercase text-gray-500">निवडा लेआउट</label>
+            <div class="mb-4 p-3 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                <label class="text-xs font-bold uppercase text-gray-500 block mb-2">फोटो अपलोड करा</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="previewPhoto(event)" class="text-xs">
+            </div>
+
+            <label class="text-xs font-bold uppercase text-gray-500">लेआउट</label>
             <select id="layoutId" onchange="update()" class="input-box bg-blue-50 font-bold">
                 <option value="modern">Modern Professional</option>
-                <option value="executive">Executive Classic</option>
-                <option value="minimal">Minimalist Clean</option>
+                <option value="executive">Executive Sidebar</option>
             </select>
 
             <label class="text-xs font-bold uppercase text-gray-500">थीम रंग</label>
-            <input type="color" id="themeColor" value="#1e40af" oninput="update()" class="w-full h-10 mb-4">
+            <input type="color" id="themeColor" value="#1e40af" oninput="update()" class="w-full h-10 mb-4 cursor-pointer">
 
             <input type="text" id="inName" placeholder="पूर्ण नाव" oninput="update()" class="input-box">
-            <input type="email" id="inEmail" placeholder="ईमेल" oninput="update()" class="input-box">
+            <input type="text" id="inJob" placeholder="तुमची पदवी (उदा. Software Developer)" oninput="update()" class="input-box">
             <input type="text" id="inPhone" placeholder="मोबाईल" oninput="update()" class="input-box">
-            <input type="text" id="inAddress" placeholder="शहर/पत्ता" oninput="update()" class="input-box">
+            <input type="text" id="inEmail" placeholder="ईमेल" oninput="update()" class="input-box">
             
             <textarea id="inSummary" placeholder="प्रोफेशनल सारांश" oninput="update()" rows="3" class="input-box"></textarea>
-            <textarea id="inExp" placeholder="अनुभव (प्रत्येक ओळीवर नवीन)" oninput="update()" rows="4" class="input-box"></textarea>
-            <textarea id="inEdu" placeholder="शिक्षण (प्रत्येक ओळीवर नवीन)" oninput="update()" rows="4" class="input-box"></textarea>
+            <textarea id="inExp" placeholder="कामाचा अनुभव (प्रत्येक ओळीवर नवीन)" oninput="update()" rows="4" class="input-box"></textarea>
+            <textarea id="inEdu" placeholder="शिक्षण" oninput="update()" rows="3" class="input-box"></textarea>
             <input type="text" id="inSkills" placeholder="कौशल्ये (स्वल्पविराम द्या)" oninput="update()" class="input-box">
-            <input type="text" id="inHobbies" placeholder="छंद" oninput="update()" class="input-box">
 
-            <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg mt-4">Download PDF</button>
+            <button onclick="downloadPDF()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-black transition mt-4">Download PDF</button>
         </aside>
 
         <main class="preview-area" id="previewArea">
-            <div id="resume-canvas"></div>
+            <div id="resume-canvas">
+                </div>
         </main>
     </div>
 
     <script>
+        let photoData = "";
+
+        function previewPhoto(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                photoData = reader.result;
+                update();
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
         function update() {
             const val = (id) => document.getElementById(id).value;
             const config = {
-                name: val('inName') || "तुमचे नाव",
+                name: val('inName') || "आपले नाव",
+                job: val('inJob') || "Software Developer",
                 email: val('inEmail') || "email@example.com",
                 phone: val('inPhone') || "9876543210",
-                city: val('inAddress') || "शहर, राज्य",
                 summary: val('inSummary') || "येथे तुमचा सारांश दिसेल...",
                 exp: val('inExp').split('\n').filter(i => i.trim()),
                 edu: val('inEdu').split('\n').filter(i => i.trim()),
                 skills: val('inSkills').split(',').filter(i => i.trim()),
-                hobbies: val('inHobbies') || "वाचन, प्रवास",
                 color: val('themeColor'),
                 layout: val('layoutId')
             };
@@ -92,61 +106,68 @@
             const canvas = document.getElementById('resume-canvas');
             let content = "";
 
-            // --- Layout: Modern ---
+            // --- Layout 1: Modern (Full Width with Large Spacing) ---
             if (config.layout === 'modern') {
                 content = `
-                    <div style="padding: 40px; width: 100%;">
-                        <div style="border-left: 10px solid ${config.color}; padding-left: 20px; margin-bottom: 30px;">
-                            <h1 style="font-size: 40px; font-weight: 800; line-height: 1.2;">${config.name}</h1>
-                            <p style="color: ${config.color}; font-weight: 600;">${config.email} | ${config.phone} | ${config.city}</p>
-                        </div>
-                        <div style="margin-bottom: 25px;">
-                            <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; font-weight: 700; margin-bottom: 10px;">PROFILE</h3>
-                            <p style="font-size: 14px; line-height: 1.6;">${config.summary}</p>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div style="padding: 60px 50px; flex-grow: 1; display: flex; flex-direction: column;">
+                        <div style="display: flex; align-items: center; gap: 30px; border-bottom: 3px solid ${config.color}; padding-bottom: 30px; margin-bottom: 40px;">
+                            ${photoData ? `<img src="${photoData}" class="profile-img" style="border-color: ${config.color}">` : ''}
                             <div>
-                                <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; font-weight: 700; margin-bottom: 10px;">EXPERIENCE</h3>
-                                ${config.exp.map(e => `<p style="font-size: 13px; margin-bottom: 8px;">• ${e}</p>`).join('')}
+                                <h1 style="font-size: 45px; font-weight: 800; color: #111; line-height: 1;">${config.name}</h1>
+                                <p style="font-size: 18px; color: ${config.color}; font-weight: 600; margin-top: 10px;">${config.job}</p>
+                                <p style="font-size: 13px; color: #666; margin-top: 5px;">📞 ${config.phone} | 📧 ${config.email}</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 40px;">
+                            <h3 style="color: ${config.color}; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; border-left: 5px solid ${config.color}; padding-left: 15px;">Profile</h3>
+                            <p style="font-size: 15px; line-height: 1.8; color: #333; padding-left: 20px;">${config.summary}</p>
+                        </div>
+
+                        <div style="flex-grow: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 50px;">
+                            <div>
+                                <h3 style="color: ${config.color}; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; border-left: 5px solid ${config.color}; padding-left: 15px;">Experience</h3>
+                                <div style="padding-left: 20px;">
+                                    ${config.exp.map(e => `<p style="font-size: 14px; margin-bottom: 15px; line-height: 1.6;">• ${e}</p>`).join('')}
+                                </div>
                             </div>
                             <div>
-                                <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; font-weight: 700; margin-bottom: 10px;">EDUCATION</h3>
-                                ${config.edu.map(e => `<p style="font-size: 13px; margin-bottom: 8px;">• ${e}</p>`).join('')}
+                                <h3 style="color: ${config.color}; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; border-left: 5px solid ${config.color}; padding-left: 15px;">Education</h3>
+                                <div style="padding-left: 20px; margin-bottom: 30px;">
+                                    ${config.edu.map(e => `<p style="font-size: 14px; margin-bottom: 10px;">• ${e}</p>`).join('')}
+                                </div>
+                                <h3 style="color: ${config.color}; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; border-left: 5px solid ${config.color}; padding-left: 15px;">Skills</h3>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px; padding-left: 20px;">
+                                    ${config.skills.map(s => `<span style="background: ${config.color}; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px;">${s}</span>`).join('')}
+                                </div>
                             </div>
                         </div>
                     </div>
                 `;
             } 
-            // --- Layout: Executive ---
-            else if (config.layout === 'executive') {
-                content = `
-                    <div style="display: grid; grid-template-columns: 260px 1fr; min-height: 297mm;">
-                        <div style="background: ${config.color}; color: white; padding: 40px 25px;">
-                            <h2 style="font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px;">CONTACT</h2>
-                            <p style="font-size: 12px; margin: 15px 0;">📞 ${config.phone}<br>📧 ${config.email}<br>📍 ${config.city}</p>
-                            <h2 style="font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; margin-top: 30px;">SKILLS</h2>
-                            <div style="font-size: 12px; line-height: 2;">${config.skills.join('<br>')}</div>
-                        </div>
-                        <div style="padding: 50px;">
-                            <h1 style="font-size: 42px; font-weight: 800; color: ${config.color};">${config.name}</h1>
-                            <p style="font-size: 14px; margin-top: 20px; line-height: 1.6;">${config.summary}</p>
-                            <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; margin-top: 30px; font-weight: 700;">EXPERIENCE</h3>
-                            <div style="font-size: 13px; margin-top: 10px;">${config.exp.map(e => `<p style="margin-bottom: 10px;">• ${e}</p>`).join('')}</div>
-                        </div>
-                    </div>
-                `;
-            }
-            // --- Layout: Minimal ---
+            
+            // --- Layout 2: Executive Sidebar ---
             else {
                 content = `
-                    <div style="padding: 50px; text-align: center;">
-                        <h1 style="font-size: 32px; font-weight: 800; border-bottom: 2px solid #333; display: inline-block;">${config.name}</h1>
-                        <p style="font-size: 13px; margin-top: 10px;">${config.city} | ${config.phone} | ${config.email}</p>
-                        <div style="text-align: left; margin-top: 40px;">
-                            <h3 style="background: #f4f4f4; padding: 5px 10px; font-weight: bold;">OBJECTIVE</h3>
-                            <p style="font-size: 13px; margin: 15px 0;">${config.summary}</p>
-                            <h3 style="background: #f4f4f4; padding: 5px 10px; font-weight: bold;">SKILLS</h3>
-                            <p style="font-size: 13px; margin: 15px 0;">${config.skills.join(', ')}</p>
+                    <div style="display: grid; grid-template-columns: 280px 1fr; min-height: 297mm;">
+                        <div style="background: ${config.color}; color: white; padding: 50px 30px; display: flex; flex-direction: column;">
+                            ${photoData ? `<img src="${photoData}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%; border: 5px solid white; margin-bottom: 30px; align-self: center;">` : ''}
+                            <h2 style="font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-bottom: 20px;">CONTACT</h2>
+                            <p style="font-size: 13px; margin-bottom: 15px;">📞 ${config.phone}</p>
+                            <p style="font-size: 13px; margin-bottom: 15px;">📧 ${config.email}</p>
+                            
+                            <h2 style="font-weight: 800; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; margin-top: 40px; margin-bottom: 20px;">SKILLS</h2>
+                            <div style="font-size: 13px; line-height: 2.2;">${config.skills.map(s => `• ${s}`).join('<br>')}</div>
+                        </div>
+                        <div style="padding: 60px 50px; display: flex; flex-direction: column; flex-grow: 1;">
+                            <h1 style="font-size: 48px; font-weight: 900; color: ${config.color}; text-transform: uppercase; line-height: 1;">${config.name}</h1>
+                            <p style="font-size: 20px; color: #666; margin-top: 10px; margin-bottom: 40px;">${config.job}</p>
+                            
+                            <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: 800; margin-bottom: 15px;">SUMMARY</h3>
+                            <p style="font-size: 15px; line-height: 1.8; margin-bottom: 40px;">${config.summary}</p>
+                            
+                            <h3 style="color: ${config.color}; border-bottom: 2px solid #eee; padding-bottom: 10px; font-weight: 800; margin-bottom: 15px;">EXPERIENCE</h3>
+                            <div style="font-size: 14px; flex-grow: 1;">${config.exp.map(e => `<p style="margin-bottom: 20px; line-height: 1.6;">• ${e}</p>`).join('')}</div>
                         </div>
                     </div>
                 `;
@@ -154,7 +175,7 @@
 
             canvas.innerHTML = content;
 
-            // Auto-scaling for preview
+            // Preview auto-scaling
             const area = document.getElementById('previewArea');
             const scale = (area.offsetWidth - 80) / 794; 
             canvas.style.transform = `scale(${scale < 1 ? scale : 1})`;
@@ -167,8 +188,9 @@
 
             html2pdf().set({
                 margin: 0,
-                filename: 'Resume_VRTech.pdf',
-                html2canvas: { scale: 3, useCORS: true },
+                filename: 'Professional_Resume_VRTech.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             }).from(element).save().then(() => {
                 element.style.transform = originalTransform;
